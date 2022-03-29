@@ -82,8 +82,6 @@ class BaseMatchSolver:
                 break
             P = P_new
 
-        self.P_final_ = P
-
         self.finalize(P)
 
     def initialize(self):
@@ -111,12 +109,19 @@ class BaseMatchSolver:
 
     def finalize(self, P):
         self.print("Finalizing permutation")
-        _, permutation = linear_sum_assignment(self.P_final_, maximize=self.maximize)
-        self.permutation_ = permutation
-        self.unset_reference_frame()
+        P = self.unset_reference_frame(P)
+        self.P_final_ = P
 
-        score = self.compute_score(self.permutation_)
+        _, permutation = linear_sum_assignment(P, maximize=self.maximize)
+        self.permutation_ = permutation
+
+        score = self.compute_score(permutation)
         self.score_ = score
+
+    def unset_reference_frame(self, P):
+        reverse_perm = self._reverse_permutation
+        P = P[:, reverse_perm]
+        return P
 
 
 # REF: https://github.com/microsoft/graspologic/blob/dev/graspologic/match/qap.py

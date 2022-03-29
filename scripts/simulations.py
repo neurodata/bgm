@@ -76,7 +76,6 @@ for contra_rho in np.linspace(0, 1, 11):
         ):
             solver = Solver(adjacency, indices_A, indices_B)
             solver.solve()
-            solver.P_final_
             match_ratio = (solver.permutation_ == undo_perm).mean()
 
             rows.append(
@@ -94,7 +93,6 @@ results = pd.DataFrame(rows)
 
 #%%
 
-
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 sns.lineplot(
     data=results,
@@ -109,6 +107,7 @@ ax.set_xlabel("Contralateral edge correlation")
 sns.move_legend(ax, loc="upper left", title="Method")
 gluefig("match_ratio_by_contra_rho", fig)
 
+#%%
 # #%%
 # contra_rho = 0.8
 # A, B = er_corr(n_side, p, ipsi_rho, directed=True)

@@ -1,6 +1,6 @@
 import numpy as np
 from numba import jit
-from pkg.match import BaseMatchSolver
+from ..match import BaseMatchSolver
 from scipy.optimize import linear_sum_assignment
 
 
@@ -64,9 +64,19 @@ class BisectedGraphMatchSolver(BaseMatchSolver):
     def check_outlier_cases(self):
         pass
 
+    # side_perm = self.rng.permutation(self.n_unseed, 2 * self.n_unseed)
+    # perm = np.concatenate((np.arange(self.n_unseed), side_perm))
     # TODO
     def set_reference_frame(self):
-        pass
+        if self.shuffle_input:
+            perm = self.rng.permutation(self.n_unseed)
+
+            self._reverse_permutation = np.argsort(perm)
+
+            self.B = self.B[perm][:, perm]
+            self.AB = self.AB[:, perm]  # permute columns only
+            self.BA = self.BA[perm]  # permute rows only
+            # TODO permute seeds and anything else that could be added
 
     def compute_constant_terms(self):
         # only happens with seeds
@@ -99,9 +109,6 @@ class BisectedGraphMatchSolver(BaseMatchSolver):
         self.print("Computing gradient")
         gradient = _compute_gradient(P, self.A, self.B, self.AB, self.BA)
         return gradient
-
-    def unset_reference_frame(self):
-        pass
 
     def compute_score(*args):
         return 0
