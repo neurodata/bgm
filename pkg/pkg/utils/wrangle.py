@@ -116,5 +116,5 @@ def remove_group(
 
     sub_left_adj = left_adj[np.ix_(sub_left_inds, sub_left_inds)]
     sub_right_adj = right_adj[np.ix_(sub_right_inds, sub_right_inds)]
-    
+
     return sub_left_adj, sub_right_adj, sub_left_nodes, sub_right_nodes
