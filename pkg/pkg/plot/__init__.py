@@ -12,3 +12,4 @@ from .utils import (
     remove_shared_ax,
     shrink_axis,
 )
+from .palette import method_palette, subgraph_palette

@@ -1,10 +1,7 @@
-#%%
 import numpy as np
-from pkg.match import BaseMatchSolver
 from numba import jit
+from pkg.match import BaseMatchSolver
 from scipy.optimize import linear_sum_assignment
-from graspologic.simulations import er_corr
-import pandas as pd
 
 
 class BisectedGraphMatchSolver(BaseMatchSolver):
@@ -109,24 +106,6 @@ class BisectedGraphMatchSolver(BaseMatchSolver):
     def compute_score(*args):
         return 0
 
-    # def finalize(self, P):
-    #     self.print("Finalizing permutation")
-    #     self.P = P
-    #     pass
-    # _, permutation = linear_sum_assignment(self.P_final_, maximize=True)
-    # self.permutation_ = permutation
-    # self.unset_reference_frame()
-
-    # score = _compute_score(self.A, self.B, self.S, self.permutation_)
-    # self.score_ = score
-
-
-class GraphMatchSolver(BisectedGraphMatchSolver):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.AB = np.zeros_like(self.AB)
-        self.BA = np.zeros_like(self.BA)
-
 
 @jit(nopython=True)
 def _compute_gradient(P, A, B, AB, BA):
@@ -147,76 +126,3 @@ def _compute_coefficients(P, Q, A, B, AB, BA):
     b = b_cross + b_intra
 
     return a, b
-
-
-from tqdm import tqdm
-
-n_side = 10
-n_sims = 1000
-ipsi_rho = 0.8
-p = 0.3
-rows = []
-for contra_rho in np.linspace(0, 1, 11):
-    for sim in tqdm(range(n_sims)):
-        A, B = er_corr(n_side, p, ipsi_rho, directed=True)
-        AB, BA = er_corr(n_side, p, contra_rho, directed=True)
-        indices_A = np.arange(n_side)
-        indices_B = np.arange(n_side, 2 * n_side)
-        adjacency = np.zeros((2 * n_side, 2 * n_side))
-        adjacency[np.ix_(indices_A, indices_A)] = A
-        adjacency[np.ix_(indices_B, indices_B)] = B
-        adjacency[np.ix_(indices_A, indices_B)] = AB
-        adjacency[np.ix_(indices_B, indices_A)] = BA
-
-        side_perm = np.random.permutation(n_side) + n_side
-        perm = np.concatenate((indices_A, side_perm))
-        adjacency = adjacency[np.ix_(perm, perm)]
-        undo_perm = np.argsort(side_perm)
-
-        for Solver, method in zip(
-            [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
-        ):
-            solver = Solver(adjacency, indices_A, indices_B)
-            solver.solve()
-            solver.P_final_
-            match_ratio = (solver.permutation_ == undo_perm).mean()
-
-            rows.append(
-                {
-                    "ipsi_rho": ipsi_rho,
-                    "contra_rho": contra_rho,
-                    "match_ratio": match_ratio,
-                    "sim": sim,
-                    "method": method,
-                }
-            )
-
-results = pd.DataFrame(rows)
-
-#%%
-import seaborn as sns
-import matplotlib.pyplot as plt
-from pkg.plot import set_theme
-
-set_theme()
-fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-sns.lineplot(data=results, x="contra_rho", y="match_ratio", hue="method", ax=ax)
-ax.set_ylabel("Match ratio")
-ax.set_xlabel("Contralateral edge correlation")
-sns.move_legend(ax, loc="upper left", title="Method")
-
-#%%
-
-from graspologic.match import GraphMatch
-
-match_ratios = []
-for sim in tqdm(range(n_sims)):
-    A, B = er_corr(n_side, p, ipsi_rho, directed=True)
-
-    gm = GraphMatch()
-    gm.fit(A, B)
-    perm = gm.perm_inds_
-    match_ratio = (perm == np.arange(A.shape[0])).mean()
-    match_ratios.append(match_ratio)
-
-np.mean(match_ratios)
