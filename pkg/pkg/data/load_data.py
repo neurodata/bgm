@@ -76,6 +76,28 @@ def load_palette(path=None, version=None):
     return palette
 
 
+def load_split_connectome(dataset, weights=True):
+    dir = DATA_PATH / "processed_split"
+    if weights:
+        data = (("weight", int),)
+    else:
+        data = False
+    if dataset in ["herm_chem", "male_chem"]:
+        nodetype = str
+    elif dataset in ["maggot"]:
+        nodetype = int
+    g = nx.read_edgelist(
+        dir / f"{dataset}_edgelist.csv",
+        create_using=nx.DiGraph,
+        delimiter=",",
+        nodetype=nodetype,
+        data=data,
+    )
+    nodes = pd.read_csv(dir / f"{dataset}_nodes.csv", index_col=0)
+    adj = nx.to_numpy_array(g, nodelist=nodes.index)
+    return adj, nodes
+
+
 def load_unmatched(side="left", weights=False):
     side = side.lower()
     dir = DATA_PATH / processed_version

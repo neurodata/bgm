@@ -1,3 +1,4 @@
+#%%
 import datetime
 import os
 import time
@@ -113,7 +114,6 @@ from graspologic.plot import adjplot
 adjplot(adj_df.values, plot_type="scattermap")
 
 #%%
-from pkg.match import GraphMatchSolver
 
 n_side = len(left_nodes)
 left_inds = np.arange(n_side)
@@ -125,7 +125,6 @@ solver.solve()
 
 #%%
 
-from pkg.match import BisectedGraphMatchSolver
 
 solver = BisectedGraphMatchSolver(adj_df.values, left_inds, right_inds)
 solver.solve()
@@ -133,12 +132,11 @@ solver.solve()
 
 #%%
 
-rng = 
-
+adj = adj_df.values
 n_sims = 25
 glue("n_initializations", n_sims)
 
-RERUN_SIMS = False
+RERUN_SIMS = True
 if RERUN_SIMS:
     seeds = rng.integers(np.iinfo(np.int32).max, size=n_sims)
     rows = []
@@ -149,7 +147,7 @@ if RERUN_SIMS:
             run_start = time.time()
             solver = Solver(adj, left_inds, right_inds, rng=seed)
             solver.solve()
-            match_ratio = (solver.permutation_ == np.arange(n)).mean()
+            match_ratio = (solver.permutation_ == np.arange(n_side)).mean()
             elapsed = time.time() - run_start
             print(f"{elapsed:.3f} seconds elapsed.")
             rows.append(
@@ -166,8 +164,35 @@ if RERUN_SIMS:
             )
 
     results = pd.DataFrame(rows)
-    results.to_csv(OUT_PATH / "larva_comparison.csv")
+    results.to_csv(OUT_PATH / "male_chem_comparison.csv")
 else:
-    results = pd.read_csv(OUT_PATH / "larva_comparison.csv", index_col=0)
+    results = pd.read_csv(OUT_PATH / "male_chem_comparison.csv", index_col=0)
 
 results.head()
+
+# %%
+fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+matched_stripplot(
+    data=results,
+    x="method",
+    y="match_ratio",
+    match="sim",
+    order=["GM", "BGM"],
+    hue="method",
+    palette=method_palette,
+    ax=ax,
+    jitter=0.25,
+)
+sns.move_legend(ax, "upper left", title="Method")
+
+
+mean1 = results[results["method"] == "GM"]["match_ratio"].mean()
+mean2 = results[results["method"] == "BGM"]["match_ratio"].mean()
+
+ax.set_yticks([mean1, mean2])
+ax.set_yticklabels([f"{mean1:.2f}", f"{mean2:.2f}"])
+ax.tick_params(which="both", length=7)
+ax.set_ylabel("Match ratio")
+ax.set_xlabel("Method")
+
+gluefig("match_ratio_male_chem", fig)
