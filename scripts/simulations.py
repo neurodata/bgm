@@ -47,13 +47,14 @@ rng = np.random.default_rng(8888)
 n_side = 10
 n_sims = 1000
 ipsi_rho = 0.8
-p = 0.3
+ipsi_p = 0.3
+contra_p = 0.2
 rows = []
 for contra_rho in np.linspace(0, 1, 11):
     for sim in tqdm(range(n_sims)):
         # simulate the correlated subgraphs
-        A, B = er_corr(n_side, p, ipsi_rho, directed=True)
-        AB, BA = er_corr(n_side, p, contra_rho, directed=True)
+        A, B = er_corr(n_side, ipsi_p, ipsi_rho, directed=True)
+        AB, BA = er_corr(n_side, contra_p, contra_rho, directed=True)
 
         # construct the full network
         indices_A = np.arange(n_side)

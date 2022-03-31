@@ -140,6 +140,9 @@ for sex in ["male", "herm"]:
     adj_df, nodes, removed_lcc = ensure_connected(adj_df, nodes)
     # then remove any nodes whose partner got removed by that process
     adj_df, nodes, removed_partner_lcc = select_lateral_nodes(adj_df, nodes)
+    # REPEAT in case this removal of partners causes disconnection
+    adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
+    adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 
     adjplot(adj_df.values, plot_type="scattermap")
 
