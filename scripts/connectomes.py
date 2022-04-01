@@ -76,7 +76,9 @@ results_by_dataset = {}
 for dataset in datasets:
     adj, nodes = load_split_connectome(dataset)
     n_nodes = len(nodes)
-    glue(f"{dataset}_n_nodes", n_nodes)
+    glue(f"{dataset}_n_nodes", n_nodes, form="long")
+    n_edges = np.count_nonzero(adj)
+    glue(f"{dataset}_n_edges", n_edges, form="long")
     if RERUN_SIMS:
         left_inds, right_inds = get_hemisphere_indices(nodes)
         n_side = len(left_inds)
@@ -246,7 +248,7 @@ def draw_significance(x, xdist, y=1.02, ydist=0.03):
         [x - xdist, x - xdist, x + xdist, x + xdist],
         [y, y + ydist, y + ydist, y],
         color="dimgrey",
-        clip_on=False
+        clip_on=False,
     )
     ax.text(x, y, "*", ha="center", va="bottom", fontsize="large")
 
@@ -259,5 +261,3 @@ for i, dataset in enumerate(order):
 ax.set_ylim((ax.get_ylim()[0], 1))
 
 gluefig("match_accuracy_comparison", fig)
-
-# %%
