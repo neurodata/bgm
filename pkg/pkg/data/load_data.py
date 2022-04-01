@@ -82,15 +82,22 @@ def load_split_connectome(dataset, weights=True):
         data = (("weight", int),)
     else:
         data = False
-    if dataset in ["herm_chem", "male_chem", "specimen_107", "specimen_148"]:
+    if dataset in [
+        "herm_chem",
+        "male_chem",
+        "specimen_107",
+        "specimen_148",
+        "annelid_eye_2",
+        "annelid_visual",
+    ]:
         nodetype = str
-    elif dataset in ["maggot"]:
+    elif dataset in ["maggot", "maggot_subset"]:
         nodetype = int
     g = nx.read_edgelist(
         dir / f"{dataset}_edgelist.csv",
         create_using=nx.DiGraph,
         delimiter=",",
-        nodetype=nodetype,
+        # nodetype=nodetype,
         data=data,
     )
     nodes = pd.read_csv(dir / f"{dataset}_nodes.csv", index_col=0)

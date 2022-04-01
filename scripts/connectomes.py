@@ -3,28 +3,22 @@
 
 #%%
 import datetime
-import os
 import time
-from pathlib import Path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from giskard.plot import adjplot, matched_stripplot, matrixplot
-from numba import jit
-from pkg.data import load_maggot_graph, load_matched
+from giskard.plot import matched_stripplot
+from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
 from pkg.plot import method_palette, set_theme
-from pkg.utils import get_paired_inds, get_paired_subgraphs, get_seeds
-from scipy.optimize import linear_sum_assignment
 from scipy.stats import wilcoxon
-from pkg.data import load_split_connectome
 from tqdm import tqdm
-
 
 FILENAME = "connectomes"
 
@@ -65,11 +59,11 @@ def get_hemisphere_indices(nodes):
 
 
 RERUN_SIMS = False
-datasets = ["maggot", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
+datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
 
-# datasets = []
+# datasets = ["annelid_visual"]
 
-n_sims = 25
+n_sims = 50
 glue("n_initializations", n_sims)
 
 results_by_dataset = {}
@@ -89,7 +83,9 @@ for dataset in datasets:
                 [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
             ):
                 run_start = time.time()
-                solver = Solver(adj, left_inds, right_inds, rng=seed)
+                solver = Solver(
+                    adj, left_inds, right_inds, rng=seed, shuffle_input=True
+                )
                 solver.solve()
                 match_ratio = (solver.permutation_ == np.arange(n_side)).mean()
                 elapsed = time.time() - run_start
@@ -112,6 +108,34 @@ for dataset in datasets:
         results = pd.read_csv(OUT_PATH / f"{dataset}_match_results.csv", index_col=0)
     results_by_dataset[dataset] = results
 
+# #%%
+
+# from graspologic.plot import heatmap
+
+# # heatmap(adj, inner_hier_labels=nodes["hemisphere"], transform="binarize")
+
+# fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+# heatmap(
+#     adj[np.ix_(left_inds, left_inds)], ax=axs[0, 0], cbar=False, transform="binarize"
+# )
+# heatmap(
+#     adj[np.ix_(right_inds, right_inds)], ax=axs[0, 1], cbar=False, transform="binarize"
+# )
+# heatmap(
+#     adj[np.ix_(left_inds, right_inds)], ax=axs[1, 0], cbar=False, transform="binarize"
+# )
+# heatmap(
+#     adj[np.ix_(right_inds, left_inds)], ax=axs[1, 1], cbar=False, transform="binarize"
+# )
+# fig.set_facecolor("w")
+
+# #%%
+# list(
+#     zip(
+#         nodes[nodes["hemisphere"] == "L"].index, nodes[nodes["hemisphere"] == "R"].index
+#     )
+# )
+
 #%%
 
 set_theme(font_scale=1.2)
@@ -124,6 +148,7 @@ nice_dataset_map = {
     "herm_chem": "C. elegans\nhermaphrodite",
     "male_chem": "C. elegans\nmale",
     "maggot": "Maggot",
+    "maggot_subset": "D. melanogaster\n larva brain subset",
     "specimen_107": "P. pacificus\npharynx 1",
     "specimen_148": "P. pacificus\npharynx 2",
 }
@@ -215,9 +240,14 @@ all_results = pd.concat(all_results)
 all_results
 
 #%%
+
+mpl.rcParams["hatch.linewidth"] = 2.0
+
 set_theme(font_scale=1.2)
 order = all_results.groupby("dataset")["match_ratio"].mean().sort_values().index
 fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+
+
 sns.barplot(
     data=all_results,
     x="dataset",
@@ -227,37 +257,79 @@ sns.barplot(
     hue="method",
     ax=ax,
     palette=method_palette,
+    edgecolor="white",
+    zorder=0,
+    errcolor=".0",
+    errwidth=4,
 )
-sns.move_legend(
-    ax, "upper right", title="Method", bbox_to_anchor=(1.25, 1), frameon=True
+# hack to add hatches to only one plot
+sns.barplot(
+    data=all_results[all_results["method"] == "GM"],
+    x="dataset",
+    order=order,
+    hue_order=["GM", "BGM"],
+    y="match_ratio",
+    hue="method",
+    ax=ax,
+    palette=method_palette,
+    hatch="/",
+    zorder=1,
+    edgecolor="white",
+    errcolor=".0",
+    errwidth=4,
 )
-ax.set(ylabel="Match accuracy", xlabel="Dataset")
+
+leg = ax.get_legend()
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(
+    handles=handles[1:3][::-1],
+    labels=labels[1:3][::-1],
+    title="Method",
+    loc="upper right",
+    bbox_to_anchor=(1.25, 1),
+    frameon=True,
+)
+
+ax.set(ylabel="Matching accuracy")
 plt.setp(
     ax.get_xticklabels(), rotation=45, ha="right", va="top", rotation_mode="anchor"
 )
 ax.tick_params(length=5)
-# nice_ticklabels = []
-# for ticklabel in ax.get_xticklabels():
-#     textval = ticklabel.get_text()
-#     ni
 ax.set_xticklabels(order.map(nice_dataset_map))
 
 
-def draw_significance(x, xdist, y=1.02, ydist=0.03):
-    ax.plot(
-        [x - xdist, x - xdist, x + xdist, x + xdist],
-        [y, y + ydist, y + ydist, y],
-        color="dimgrey",
-        clip_on=False,
-    )
-    ax.text(x, y, "*", ha="center", va="bottom", fontsize="large")
+def draw_significance(pvalue, x, xdist, y=1.02, ydist=0.03):
+    if pvalue < 0.0005:
+        text = "***"
+    elif pvalue < 0.005:
+        text = "**"
+    elif pvalue < 0.05:
+        text = "*"
+    else:
+        text = ""
+    if text != "":
+        ax.plot(
+            [x - xdist, x - xdist, x + xdist, x + xdist],
+            [y, y + ydist, y + ydist, y],
+            color="dimgrey",
+            clip_on=False,
+        )
+        ax.text(x, y, text, ha="center", va="bottom", fontsize="large")
 
 
 for i, dataset in enumerate(order):
     pvalue = pvalues[dataset]
-    if pvalue < 0.001:
-        draw_significance(i, 0.2)
+    draw_significance(pvalue, i, 0.2)
 
 ax.set_ylim((ax.get_ylim()[0], 1))
 
+ax.set_xlabel("Dataset")
+ax.xaxis.set_label_coords(-0.1, -0.17)
+
 gluefig("match_accuracy_comparison", fig)
+
+#%%
+elapsed = time.time() - t0
+delta = datetime.timedelta(seconds=elapsed)
+print(f"Script took {delta}")
+print(f"Completed at {datetime.datetime.now()}")

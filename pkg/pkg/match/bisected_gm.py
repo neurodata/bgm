@@ -77,6 +77,8 @@ class BisectedGraphMatchSolver(BaseMatchSolver):
             self.AB = self.AB[:, perm]  # permute columns only
             self.BA = self.BA[perm]  # permute rows only
             # TODO permute seeds and anything else that could be added
+        else:
+            self._reverse_permutation = np.arange(self.n_unseed)
 
     def compute_constant_terms(self):
         # only happens with seeds

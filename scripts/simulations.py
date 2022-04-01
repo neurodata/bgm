@@ -100,12 +100,15 @@ sns.lineplot(
     x="contra_rho",
     y="match_ratio",
     hue="method",
+    style="method",
+    hue_order=["GM", "BGM"],
+    # dashes={"GM": "--", "BGM": "-"},
     ax=ax,
     palette=method_palette,
 )
-ax.set_ylabel("Match ratio")
+ax.set_ylabel("Matching accuracy")
 ax.set_xlabel("Contralateral edge correlation")
-sns.move_legend(ax, loc="upper left", title="Method")
+sns.move_legend(ax, loc="upper left", title="Method", frameon=True)
 gluefig("match_ratio_by_contra_rho", fig)
 
 #%%
