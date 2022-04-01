@@ -65,7 +65,9 @@ def get_hemisphere_indices(nodes):
 
 
 RERUN_SIMS = False
-datasets = ["maggot", "herm_chem", "male_chem"]
+datasets = ["maggot", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
+
+# datasets = []
 
 n_sims = 25
 glue("n_initializations", n_sims)
@@ -117,17 +119,28 @@ meanline_width = 0.35
 n_datasets = len(datasets)
 order = ["GM", "BGM"]
 nice_dataset_map = {
-    "herm_chem": "C. elegans hermaphrodite",
-    "male_chem": "C. elegans male",
+    "herm_chem": "C. elegans\nhermaphrodite",
+    "male_chem": "C. elegans\nmale",
     "maggot": "Maggot",
+    "specimen_107": "P. pacificus\npharynx 1",
+    "specimen_148": "P. pacificus\npharynx 2",
 }
 
+n_rows = int(np.ceil(n_datasets / 3))
+n_cols = min(n_datasets, 3)
 fig, axs = plt.subplots(
-    1, len(datasets), figsize=(n_datasets * scale, scale), sharey=True
+    n_rows,
+    n_cols,
+    figsize=(n_cols * scale, n_rows * scale),
+    sharey=True,
+    constrained_layout=True,
+    gridspec_kw=dict(hspace=0.1),
 )
+pvalues = {}
 
 for i, (dataset, results) in enumerate(results_by_dataset.items()):
-    ax = axs[i]
+    index = np.unravel_index(i, (n_rows, n_cols))
+    ax = axs[index]
     matched_stripplot(
         data=results,
         x="method",
@@ -142,8 +155,8 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
     )
 
     ax.tick_params(which="both", length=7)
-    ax.set_ylabel("Match ratio")
-    ax.set_xlabel("Method")
+    ax.set_ylabel("Match accuracy")
+    ax.set_xlabel("")
     ax.set_title(nice_dataset_map[dataset])
 
     ticklabels = ax.get_xticklabels()
@@ -155,9 +168,12 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
     bgm_results = results[results["method"] == "BGM"]
 
     stat, pvalue = wilcoxon(
-        gm_results["match_ratio"].values, bgm_results["match_ratio"].values
+        gm_results["match_ratio"].values,
+        bgm_results["match_ratio"].values,
+        mode="approx",
     )
     glue(f"{dataset}_match_ratio_pvalue", pvalue, form="pvalue")
+    pvalues[dataset] = pvalue
 
     for i, method in enumerate(order):
         mean_match_ratio = results[results["method"] == method]["match_ratio"].mean()
@@ -175,10 +191,73 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
             ha="left",
             fontsize="medium",
         )
-        glue(f"{dataset}_{method}_mean_match_ratio", mean_match_ratio)
+        glue(f"{dataset}_{method}_mean_match_accuracy", mean_match_ratio)
 
     ax.set_xlim((-0.5, 1.5))
     ax.set_yticks([0.45, 0.6, 0.75, 0.9])
     ax.yaxis.set_major_locator(plt.MaxNLocator(4))
 
-gluefig("match_ratio_comparison", fig)
+for ax in axs.flat:
+    if not ax.has_data():
+        ax.axis("off")
+
+gluefig("match_accuracy_comparison_lines", fig)
+
+# %%
+
+all_results = []
+for dataset, results in results_by_dataset.items():
+    results["dataset"] = dataset
+    all_results.append(results)
+all_results = pd.concat(all_results)
+all_results
+
+#%%
+set_theme(font_scale=1.2)
+order = all_results.groupby("dataset")["match_ratio"].mean().sort_values().index
+fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+sns.barplot(
+    data=all_results,
+    x="dataset",
+    order=order,
+    hue_order=["GM", "BGM"],
+    y="match_ratio",
+    hue="method",
+    ax=ax,
+    palette=method_palette,
+)
+sns.move_legend(
+    ax, "upper right", title="Method", bbox_to_anchor=(1.25, 1), frameon=True
+)
+ax.set(ylabel="Match accuracy", xlabel="Dataset")
+plt.setp(
+    ax.get_xticklabels(), rotation=45, ha="right", va="top", rotation_mode="anchor"
+)
+ax.tick_params(length=5)
+# nice_ticklabels = []
+# for ticklabel in ax.get_xticklabels():
+#     textval = ticklabel.get_text()
+#     ni
+ax.set_xticklabels(order.map(nice_dataset_map))
+
+
+def draw_significance(x, xdist, y=1.02, ydist=0.03):
+    ax.plot(
+        [x - xdist, x - xdist, x + xdist, x + xdist],
+        [y, y + ydist, y + ydist, y],
+        color="dimgrey",
+        clip_on=False
+    )
+    ax.text(x, y, "*", ha="center", va="bottom", fontsize="large")
+
+
+for i, dataset in enumerate(order):
+    pvalue = pvalues[dataset]
+    if pvalue < 0.001:
+        draw_significance(i, 0.2)
+
+ax.set_ylim((ax.get_ylim()[0], 1))
+
+gluefig("match_accuracy_comparison", fig)
+
+# %%

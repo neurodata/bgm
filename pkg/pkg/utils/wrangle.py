@@ -118,3 +118,74 @@ def remove_group(
     sub_right_adj = right_adj[np.ix_(sub_right_inds, sub_right_inds)]
 
     return sub_left_adj, sub_right_adj, sub_left_nodes, sub_right_nodes
+
+
+def select_lateral_nodes(adj_df, nodes):
+
+    counts = nodes.groupby("pair").size()
+    singleton_classes = counts[counts != 2].index
+
+    removed = nodes[nodes["pair"].isin(singleton_classes)]
+
+    nodes = nodes[~nodes["pair"].isin(singleton_classes)]
+
+    nodes = nodes.sort_values(["hemisphere", "pair"])
+    left_nodes = nodes[nodes["hemisphere"] == "L"]
+    right_nodes = nodes[nodes["hemisphere"] == "R"]
+    assert (left_nodes["pair"].values == right_nodes["pair"].values).all()
+
+    adj_df = adj_df.reindex(index=nodes.index, columns=nodes.index)
+
+    return adj_df, nodes, removed
+
+
+def ensure_connected(adj_df, nodes):
+    adj_df = adj_df.reindex(index=nodes.index, columns=nodes.index)
+    adj = adj_df.values
+
+    adj_lcc, inds = largest_connected_component(adj, return_inds=True)
+
+    removed = nodes[~nodes.index.isin(nodes.index[inds])]
+    nodes = nodes.iloc[inds]
+
+    adj_df = pd.DataFrame(data=adj_lcc, index=nodes.index, columns=nodes.index)
+
+    return adj_df, nodes, removed
+
+
+def split_nodes(nodes):
+    nodes = nodes.sort_values(["hemisphere", "pair"])
+    left_nodes = nodes[nodes["hemisphere"] == "L"]
+    right_nodes = nodes[nodes["hemisphere"] == "R"]
+    assert (left_nodes["pair"].values == right_nodes["pair"].values).all()
+    return left_nodes, right_nodes
+
+
+def create_node_data(node_ids, exceptions=["vBWM", "dgl", "dBWM"]):
+    node_rows = []
+
+    for node_id in node_ids:
+        is_sided = True
+        if not ((node_id[-1] == "L") or (node_id[-1] == "R")):
+            is_exception = False
+            for exception in exceptions:
+                if exception in node_id:
+                    is_exception = True
+            if not is_exception:
+                is_sided = False
+
+        if is_sided:
+            # node_id_no_side = node_id.strip("0123456789")
+            left_pos = node_id.rfind("L")
+            right_pos = node_id.rfind("R")
+            is_right = bool(np.argmax((left_pos, right_pos)))
+            side_indicator_loc = right_pos if is_right else left_pos
+            node_pair = node_id[:side_indicator_loc] + node_id[side_indicator_loc + 1 :]
+            hemisphere = "R" if is_right else "L"
+            node_rows.append(
+                {"node_id": node_id, "pair": node_pair, "hemisphere": hemisphere}
+            )
+
+    nodes = pd.DataFrame(node_rows).set_index("node_id")
+
+    return nodes

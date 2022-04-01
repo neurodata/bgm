@@ -3,13 +3,10 @@ import datetime
 import time
 
 import networkx as nx
-import numpy as np
 import pandas as pd
-from graspologic.plot import adjplot
+
 from pkg.data import DATA_PATH
 from pkg.utils import create_node_data, ensure_connected, select_lateral_nodes
-
-FILENAME = "process_c_elegans"
 
 DISPLAY_FIGS = True
 
@@ -17,31 +14,24 @@ OUT_PATH = DATA_PATH / "processed_split"
 
 t0 = time.time()
 
-
 #%%
 
+for specimen in ["107", "148"]:
+    path = DATA_PATH / "p_pacificus"
+    path = path / f"specimen_{specimen}_synapselist.csv"
+    mg = nx.read_edgelist(path, create_using=nx.MultiDiGraph, delimiter=",")
+    # HACK for weighting by synapse count
+    adj_df = nx.to_pandas_adjacency(mg)
 
-def load_adjacency(path):
-    adj_df = pd.read_csv(path, index_col=0).fillna(0)
-    node_ids = np.union1d(adj_df.index, adj_df.columns)
-    adj_df = adj_df.reindex(index=node_ids, columns=node_ids).fillna(0)
+    g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
+    adj_df = nx.to_pandas_adjacency(g)
+
     adj_df = pd.DataFrame(
         data=adj_df.values.astype(int), index=adj_df.index, columns=adj_df.columns
     )
-    return adj_df
+    nodes = create_node_data(list(g.nodes))
+    adj_df = adj_df.reindex(index=nodes.index, columns=nodes.index)
 
-
-#%%
-
-for sex in ["male", "herm"]:
-    file_name = f"{sex}_chem_adj.csv"
-
-    raw_path = DATA_PATH / "worm_wiring"
-    raw_path = raw_path / file_name
-
-    adj_df = load_adjacency(raw_path)
-    node_ids = adj_df.index
-    nodes = create_node_data(node_ids, exceptions=["vBWM", "dgl", "dBWM"])
     # get rid of any nodes which don't have a side designation
     adj_df, nodes, removed_nonlateral = select_lateral_nodes(adj_df, nodes)
     # then ensure the network is fully connected
@@ -52,14 +42,15 @@ for sex in ["male", "herm"]:
     adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
     adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 
-    adjplot(adj_df.values, plot_type="scattermap")
-
     g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
     nx.write_edgelist(
-        g, OUT_PATH / f"{sex}_chem_edgelist.csv", delimiter=",", data=["weight"]
+        g,
+        OUT_PATH / f"specimen_{specimen}_edgelist.csv",
+        delimiter=",",
+        data=["weight"],
     )
 
-    nodes.to_csv(OUT_PATH / f"{sex}_chem_nodes.csv")
+    nodes.to_csv(OUT_PATH / f"specimen_{specimen}_nodes.csv")
 
 #%%
 elapsed = time.time() - t0

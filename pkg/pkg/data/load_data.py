@@ -82,7 +82,7 @@ def load_split_connectome(dataset, weights=True):
         data = (("weight", int),)
     else:
         data = False
-    if dataset in ["herm_chem", "male_chem"]:
+    if dataset in ["herm_chem", "male_chem", "specimen_107", "specimen_148"]:
         nodetype = str
     elif dataset in ["maggot"]:
         nodetype = int

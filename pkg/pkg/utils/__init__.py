@@ -7,4 +7,8 @@ from .wrangle import (
     to_largest_connected_component,
     to_pandas_edgelist,
     remove_group,
+    create_node_data,
+    select_lateral_nodes,
+    ensure_connected,
+    split_nodes,
 )
