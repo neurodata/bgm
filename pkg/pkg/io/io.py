@@ -97,6 +97,8 @@ def glue(name, var, filename, figure=False, display=False, form=None):
             var = r"${<}10^{" + str(factor) + r"}$"
     elif form == "long":
         var = f"{var:,}"
+    elif form == "2.0f%":
+        var = f"{var*100:2.0f}"
 
     if form is not None:
         glue(

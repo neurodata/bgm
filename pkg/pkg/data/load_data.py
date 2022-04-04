@@ -97,7 +97,7 @@ def load_split_connectome(dataset, weights=True):
         dir / f"{dataset}_edgelist.csv",
         create_using=nx.DiGraph,
         delimiter=",",
-        # nodetype=nodetype,
+        nodetype=nodetype,
         data=data,
     )
     nodes = pd.read_csv(dir / f"{dataset}_nodes.csv", index_col=0)

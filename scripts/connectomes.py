@@ -83,9 +83,7 @@ for dataset in datasets:
                 [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
             ):
                 run_start = time.time()
-                solver = Solver(
-                    adj, left_inds, right_inds, rng=seed, shuffle_input=True
-                )
+                solver = Solver(adj, left_inds, right_inds, rng=seed)
                 solver.solve()
                 match_ratio = (solver.permutation_ == np.arange(n_side)).mean()
                 elapsed = time.time() - run_start
@@ -201,6 +199,9 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
     )
     glue(f"{dataset}_match_ratio_pvalue", pvalue, form="pvalue")
     pvalues[dataset] = pvalue
+
+    improvement = bgm_results["match_ratio"].mean() - gm_results["match_ratio"].mean()
+    glue(f"{dataset}_mean_accuracy_change", improvement, form="2.0f%")
 
     for i, method in enumerate(order):
         mean_match_ratio = results[results["method"] == method]["match_ratio"].mean()
