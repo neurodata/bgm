@@ -1,5 +1,4 @@
 #%%
-from lib2to3.pgen2.grammar import Grammar
 import pandas as pd
 
 filename = "bgm/data/elife-24838-fig1-figsupp4-data1-v1.csv"
@@ -45,6 +44,7 @@ p1 = compute_p(right_adj)
 p2 = compute_p(left_adj)
 
 from graspologic.simulations import er_corr
+from scipy.stats import pearsonr
 
 n = len(right_adj)
 p = (p1 + p2) / 2
@@ -53,8 +53,53 @@ rho = 0.0
 
 def obj_func(A, B, perm):
     PBPT = B[perm[: len(A)]][:, perm[: len(A)]]
-    return np.linalg.norm(A - PBPT, ord="fro") ** 2
+    return np.linalg.norm(A - PBPT, ord="fro") ** 2, PBPT
 
+
+def ravel(A):
+    triu_indices = np.triu_indices_from(A, k=1)
+    tril_indices = np.tril_indices_from(A, k=-1)
+    return np.concatenate((A[triu_indices], A[tril_indices]))
+
+
+def compute_density(adjacency, loops=False):
+    if not loops:
+        triu_inds = np.triu_indices_from(adjacency, k=1)
+        tril_inds = np.tril_indices_from(adjacency, k=-1)
+        n_edges = np.count_nonzero(adjacency[triu_inds]) + np.count_nonzero(
+            adjacency[tril_inds]
+        )
+    else:
+        n_edges = np.count_nonzero(adjacency)
+    n_nodes = adjacency.shape[0]
+    n_possible = n_nodes**2
+    if not loops:
+        n_possible -= n_nodes
+    return n_edges / n_possible
+
+
+def compute_alignment_strength(A, B, perm=None):
+    n = A.shape[0]
+    if perm is not None:
+        B_perm = B[perm][:, perm]
+    else:
+        B_perm = B
+    n_disagreements = np.count_nonzero(A - B_perm)
+    p_disagreements = n_disagreements / (n**2 - n)
+    densityA = compute_density(A)
+    densityB = compute_density(B)
+    denominator = densityA * (1 - densityB) + densityB * (1 - densityA)
+    alignment_strength = 1 - p_disagreements / denominator
+    return alignment_strength
+
+
+#
+
+
+#%%
+ravel(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+
+#%%
 
 rng = np.random.default_rng()
 n_sims = 1000
@@ -74,9 +119,23 @@ for data in ["true", "er"]:
                 gm = GraphMatch()
                 gm.fit(A, B)
                 perm_inds = gm.perm_inds_
-            score = obj_func(A, B, perm_inds)
+            score, B_perm = obj_func(A, B, perm_inds)
 
-            rows.append({"method": method, "score": score, "data": data, "sim": sim})
+            pearson_stat, pearson_pvalues = pearsonr(ravel(A), ravel(B_perm))
+
+            alignment = compute_alignment_strength(A, B_perm)
+
+            rows.append(
+                {
+                    "method": method,
+                    "score": score,
+                    "data": data,
+                    "sim": sim,
+                    "pearson_stat": pearson_stat,
+                    "pearson_pvalues": pearson_pvalues,
+                    "alignment": alignment,
+                }
+            )
 
 results = pd.DataFrame(rows)
 #%%
@@ -85,34 +144,50 @@ import seaborn as sns
 from pkg.plot import set_theme
 
 set_theme()
-fig, axs = plt.subplots(2, 1, figsize=(8, 12))
-ax = axs[0]
-sns.histplot(
+fig, axs = plt.subplots(
+    2, 1, figsize=(8, 6), sharex=True, gridspec_kw=dict(hspace=0.01)
+)
+ax = axs[1]
+sns.kdeplot(
     data=results[results["data"] == "er"],
     x="score",
     hue="method",
-    bins=50,
-    kde=True,
+    # bins=50,
+    # kde=True,
+    fill=True,
     ax=ax,
+    legend=False,
 )
 ax.set_xlabel("Network difference magnitude")
 ax.set(ylabel="", yticks=[])
+ax.set_ylabel("Independent\nER\nsimulation\n", rotation=0, ha="right", va="center")
 ax.spines["left"].set_visible(False)
 
-ax = axs[1]
-sns.histplot(
+ax = axs[0]
+sns.kdeplot(
     data=results[results["data"] == "true"],
     x="score",
     hue="method",
-    bins=50,
-    kde=True,
+    # bins=50,
+    # kde=True,
+    fill=True,
     ax=ax,
+    legend=True,
 )
 ax.set_xlabel("Network difference magnitude")
 ax.set(ylabel="", yticks=[])
+ax.set_ylabel("Observed\ndata", rotation=0, ha="right", va="center")
 ax.spines["left"].set_visible(False)
+sns.move_legend(ax, "upper right", title="Matching")
 
+#%%
 
+from giskard.plot import subuniformity_plot
+
+x = results[(results["data"] == "er") & (results["method"] == "random")][
+    "pearson_pvalues"
+]
+subuniformity_plot(x)
 #%%
 
 er_results = results[results["data"] == "er"]
@@ -136,3 +211,17 @@ obs_to_er_ratio = true_ratios.mean() / er_ratios.mean()
 from graspologic.utils import is_loopless
 
 is_loopless(adj)
+
+#%% compute the alignment strength metric
+
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+sns.kdeplot(
+    data=results[results["method"] == "gm"],
+    x="alignment",
+    hue="data",
+    ax=ax,
+    fill=True,
+)
+ax.set(ylabel="", yticks=[], xlabel="Alignment strength")
+ax.spines["left"].set_visible(False)
