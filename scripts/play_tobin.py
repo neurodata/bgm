@@ -42,12 +42,13 @@ def compute_p(A):
 
 p1 = compute_p(right_adj)
 p2 = compute_p(left_adj)
+n = len(right_adj)
+p = (p1 + p2) / 2
 
 from graspologic.simulations import er_corr
 from scipy.stats import pearsonr
 
-n = len(right_adj)
-p = (p1 + p2) / 2
+
 rho = 0.0
 
 
@@ -84,7 +85,7 @@ def compute_alignment_strength(A, B, perm=None):
         B_perm = B[perm][:, perm]
     else:
         B_perm = B
-    n_disagreements = np.count_nonzero(A - B_perm)
+    n_disagreements = np.count_nonzero(A - B_perm)  # TODO this assumes loopless
     p_disagreements = n_disagreements / (n**2 - n)
     densityA = compute_density(A)
     densityB = compute_density(B)
@@ -93,11 +94,86 @@ def compute_alignment_strength(A, B, perm=None):
     return alignment_strength
 
 
-#
+#%%
+from graspologic.simulations import er_np
+from tqdm import tqdm
 
+A = right_adj
+B = left_adj
+
+n_init = 25
+
+rows = []
+
+gm = GraphMatch(n_init=n_init)
+gm.fit(A, B)
+perm_inds = gm.perm_inds_
+score, B_perm = obj_func(A, B, perm_inds)
+alignment = compute_alignment_strength(A, B_perm)
+
+rows.append({"data": "Observed", "score": score, "alignment": alignment})
+
+p1 = compute_p(A)
+p2 = compute_p(B_perm)
+n = len(A)
+p = (p1 + p2) / 2
+
+rng = np.random.default_rng()
+n_sims = 1000
+
+for sim in tqdm(range(n_sims)):
+    A = er_np(n, p, directed=True, loops=False)
+    B = er_np(n, p, directed=True, loops=False)
+    gm = GraphMatch(n_init=n_init)
+    gm.fit(A, B)
+    perm_inds = gm.perm_inds_
+    score, B_perm = obj_func(A, B, perm_inds)
+    alignment = compute_alignment_strength(A, B_perm)
+
+    rows.append({"data": "ER", "score": score, "alignment": alignment})
+
+results = pd.DataFrame(rows)
 
 #%%
-ravel(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+from giskard.plot import histplot
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+histplot(data=results, x="alignment", hue="data", kde=True, ax=ax)
+ax.set(ylabel="", yticks=[], xlabel="Alignment strength")
+ax.spines["left"].set_visible(False)
+
+#%%
+
+import seaborn as sns
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+out_degrees_A = np.count_nonzero(A, axis=1)
+out_degrees_B = np.count_nonzero(B, axis=1)
+bins = np.arange(15)
+sns.histplot(
+    x=out_degrees_A,
+    label="A",
+    bins=bins,
+    color="lightblue",
+    discrete=True,
+    stat="density",
+)
+sns.histplot(
+    x=out_degrees_B,
+    label="B",
+    bins=bins,
+    color="darkorange",
+    discrete=True,
+    stat="density",
+)
+
+from scipy.stats import binom
+
+pmf = binom(n - 1, p).pmf(bins)
+# sns.lineplot(x=bins, y=pmf, color='grey')
+sns.scatterplot(x=bins, y=pmf, color='grey')
+
 
 #%%
 
@@ -225,3 +301,58 @@ sns.kdeplot(
 )
 ax.set(ylabel="", yticks=[], xlabel="Alignment strength")
 ax.spines["left"].set_visible(False)
+
+#%%
+import itertools
+from graspologic.simulations import er_np
+
+n = 5
+A = er_np(n, p=0.3, directed=True, loops=False)
+permutations = list(itertools.permutations(range(n)))
+
+permutation = rng.permutation(n)
+B = A[np.ix_(permutation, permutation)]
+# B = A.copy()
+
+true_n_disagreements = np.count_nonzero(A - B)
+
+denom = 0
+for permutation in permutations:
+    B_perm = B[np.ix_(permutation, permutation)]
+    n_disagreements = np.count_nonzero(A - B_perm)
+    denom += n_disagreements / len(permutations)
+
+print(1 - true_n_disagreements / denom)
+
+alignment = compute_alignment_strength(A, B)
+print(alignment)
+
+
+#%%
+
+
+def compute_alignment_strength(A, B, perm=None):
+    n = A.shape[0]
+    if perm is not None:
+        B_perm = B[perm][:, perm]
+    else:
+        B_perm = B
+    n_disagreements = np.count_nonzero(A - B_perm)
+    p_disagreements = n_disagreements / (n**2 - n)
+    densityA = compute_density(A)
+    densityB = compute_density(B)
+    denominator = densityA * (1 - densityB) + densityB * (1 - densityA)
+    alignment_strength = 1 - p_disagreements / denominator
+    return alignment_strength
+
+
+#%%
+
+n = 6
+A = er_np(n, p=0.3, directed=False, loops=False)
+permutations = list(itertools.permutations(range(n)))
+B = A[np.ix_(permutations[27], permutations[27])]
+n_disagreements = np.count_nonzero(A - B)
+
+for perm in permutations:
+    np.count_nonzero(A - B[perm][:, perm])
