@@ -13,7 +13,9 @@ from graspologic.simulations import er_corr
 from pkg.io import FIG_PATH, OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
+
+# from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
+from giskard.match import GraphMatchSolver
 from pkg.plot import method_palette, set_theme
 from tqdm import tqdm
 
@@ -95,31 +97,24 @@ glue("contra_p", contra_p)
 #%%
 rows = []
 for contra_rho in np.linspace(0, 1, 11):
-    for sim in tqdm(range(n_sims), leave=False):
+    for sim in tqdm(range(n_sims), leave=False, desc=str(contra_rho)):
         # simulate the correlated subgraphs
         A, B = er_corr(n_side, ipsi_p, ipsi_rho, directed=True)
         AB, BA = er_corr(n_side, contra_p, contra_rho, directed=True)
 
-        # construct the full network
-        indices_A = np.arange(n_side)
-        indices_B = np.arange(n_side, 2 * n_side)
-        adjacency = np.zeros((2 * n_side, 2 * n_side))
-        adjacency[np.ix_(indices_A, indices_A)] = A
-        adjacency[np.ix_(indices_B, indices_B)] = B
-        adjacency[np.ix_(indices_A, indices_B)] = AB
-        adjacency[np.ix_(indices_B, indices_A)] = BA
-
-        # permute one hemisphere
-        side_perm = rng.permutation(n_side) + n_side
-        perm = np.concatenate((indices_A, side_perm))
-        adjacency = adjacency[np.ix_(perm, perm)]
-        undo_perm = np.argsort(side_perm)
+        # permute one side as appropriate
+        perm = rng.permutation(n_side)
+        undo_perm = np.argsort(perm)
+        B = B[perm][:, perm]
+        AB = AB[:, perm]
+        BA = BA[perm, :]
 
         # run the matching
-        for Solver, method in zip(
-            [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
-        ):
-            solver = Solver(adjacency, indices_A, indices_B)
+        for method in ["GM", "BGM"]:
+            if method == "GM":
+                solver = GraphMatchSolver(A, B)
+            elif method == "BGM":
+                solver = GraphMatchSolver(A, B, AB=AB, BA=BA)
             solver.solve()
             match_ratio = (solver.permutation_ == undo_perm).mean()
 
