@@ -15,7 +15,8 @@ from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
+
+# from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
 from pkg.plot import method_palette, set_theme
 from scipy.stats import wilcoxon
 from tqdm import tqdm
@@ -65,6 +66,7 @@ datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen
 
 n_sims = 50
 glue("n_initializations", n_sims)
+from giskard.match import GraphMatchSolver
 
 results_by_dataset = {}
 for dataset in datasets:
@@ -75,15 +77,24 @@ for dataset in datasets:
     glue(f"{dataset}_n_edges", n_edges, form="long")
     if RERUN_SIMS:
         left_inds, right_inds = get_hemisphere_indices(nodes)
+        A = adj[left_inds][:, left_inds]
+        B = adj[right_inds][:, right_inds]
+        AB = adj[left_inds][:, right_inds]
+        BA = adj[right_inds][:, left_inds]
         n_side = len(left_inds)
-        seeds = rng.integers(np.iinfo(np.int32).max, size=n_sims)
+        seeds = rng.integers(np.iinfo(np.uint32).max, size=n_sims)
         rows = []
-        for sim, seed in enumerate(tqdm(seeds)):
-            for Solver, method in zip(
-                [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
-            ):
+        for sim, seed in enumerate(tqdm(seeds, leave=False)):
+            # for Solver, method in zip(
+            #     [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
+            # ):
+            for method in ["GM", "BGM"]:
+                if method == "GM":
+                    solver = GraphMatchSolver(A, B, rng=seed)
+                elif method == "BGM":
+                    solver = GraphMatchSolver(A, B, AB=AB, BA=BA, rng=seed)
                 run_start = time.time()
-                solver = Solver(adj, left_inds, right_inds, rng=seed)
+                # solver = Solver(adj, left_inds, right_inds, rng=seed)
                 solver.solve()
                 match_ratio = (solver.permutation_ == np.arange(n_side)).mean()
                 elapsed = time.time() - run_start
@@ -147,8 +158,8 @@ nice_dataset_map = {
     "male_chem": "C. elegans\nmale",
     "maggot": "Maggot",
     "maggot_subset": "D. melanogaster\n larva brain subset",
-    "specimen_107": "P. pacificus\npharynx 1",
-    "specimen_148": "P. pacificus\npharynx 2",
+    "specimen_107": "P. pacificus\npharynx 2",
+    "specimen_148": "P. pacificus\npharynx 1",
 }
 
 n_rows = int(np.ceil(n_datasets / 3))
@@ -229,7 +240,7 @@ for ax in axs.flat:
     if not ax.has_data():
         ax.axis("off")
 
-gluefig("match_accuracy_comparison_lines", fig)
+# gluefig("match_accuracy_comparison_lines", fig)
 
 # %%
 

@@ -4,24 +4,15 @@
 #%%
 import datetime
 import time
-from tkinter import font
-from turtle import undo
 
-import matplotlib as mpl
+
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from pyparsing import line
 import seaborn as sns
-from giskard.plot import matched_stripplot
-from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
-from pkg.plot import method_palette, set_theme
-from scipy.stats import wilcoxon
-from tqdm import tqdm
+from pkg.plot import set_theme
 
 FILENAME = "explain"
 
@@ -98,6 +89,7 @@ def annotated_heatmap(
         hier_label_fontsize=20,
         title=title,
         font_scale=1.5,
+        vmax=1.2,
     )
 
     rect_kws = dict(alpha=0.2, zorder=2, linewidth=3)
@@ -365,7 +357,7 @@ multicolor_text(
     fontsize="x-large",
 )
 
-gluefig('explain', fig)
+gluefig("explain", fig)
 
 #%%
 elapsed = time.time() - t0
