@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import pymaid
 import seaborn as sns
+from graspologic.plot import adjplot
 from pkg.data import DATA_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
@@ -142,6 +143,12 @@ adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
 adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 
 #%% [markdown]
+# ## Plot the resulting adjacency matrix
+#%%
+
+adjplot(adj_df.values, plot_type="scattermap")
+
+#%% [markdown]
 # ## Compute some simple statistics
 #%%
 left_index = nodes[nodes["hemisphere"] == "L"].index
@@ -157,6 +164,18 @@ m_ipsi = m_ll + m_rr
 p_contra = m_contra / (m_ipsi + m_contra)
 glue("p_contra", p_contra, form="2.0f%")
 print(f"Probability of an edge being a contralateral: {p_contra:.2f}")
+
+
+#%% [markdown]
+# ## Save the finalized network and node metadata
+#%%
+g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
+
+nx.write_edgelist(
+    g, OUT_PATH / "maggot_subset_edgelist.csv", delimiter=",", data=["weight"]
+)
+
+nodes.to_csv(OUT_PATH / "maggot_subset_nodes.csv")
 
 #%% [markdown]
 # ## Examine annotations of the neurons used here
@@ -209,17 +228,6 @@ _ = plt.setp(
     va="center",
     rotation_mode="anchor",
 )
-
-#%% [markdown]
-# ## Save the finalized network and node metadata
-#%%
-g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
-
-nx.write_edgelist(
-    g, OUT_PATH / "maggot_subset_edgelist.csv", delimiter=",", data=["weight"]
-)
-
-nodes.to_csv(OUT_PATH / "maggot_subset_nodes.csv")
 
 #%% [markdown]
 # ## End

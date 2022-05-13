@@ -1,21 +1,25 @@
+#%% [markdown]
+# # *P. pacificus* pharynx connectomes
 #%%
 import datetime
 import time
 
 import networkx as nx
 import pandas as pd
-
+from graspologic.plot import adjplot
 from pkg.data import DATA_PATH
 from pkg.utils import create_node_data, ensure_connected, select_lateral_nodes
-
-DISPLAY_FIGS = True
 
 OUT_PATH = DATA_PATH / "processed_split"
 
 t0 = time.time()
 
-#%%
 
+#%% [markdown]
+# ## Filter data
+# Make sure neurons are lateralized and fully connected
+
+#%%
 for specimen in ["107", "148"]:
     path = DATA_PATH / "p_pacificus"
     path = path / f"specimen_{specimen}_synapselist.csv"
@@ -42,6 +46,8 @@ for specimen in ["107", "148"]:
     adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
     adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 
+    adjplot(adj_df.values, plot_type="heatmap")
+
     g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
     nx.write_edgelist(
         g,
@@ -52,6 +58,8 @@ for specimen in ["107", "148"]:
 
     nodes.to_csv(OUT_PATH / f"specimen_{specimen}_nodes.csv")
 
+#%% [markdown]
+# ## End
 #%%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

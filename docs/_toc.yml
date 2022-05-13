@@ -9,4 +9,6 @@ parts:
     - file: simulations
   - caption: Data wrangling
     chapters:
+    - file: process_c_elegans
     - file: process_maggot
+    - file: process_p_pacificus

@@ -1,3 +1,5 @@
+#%% [markdown]
+# # *C. elegans* connectomes
 #%%
 import datetime
 import time
@@ -18,6 +20,8 @@ OUT_PATH = DATA_PATH / "processed_split"
 t0 = time.time()
 
 
+#%% [markdown]
+# ## Load the raw adjacency matrices
 #%%
 
 
@@ -31,8 +35,10 @@ def load_adjacency(path):
     return adj_df
 
 
+#%% [markdown]
+# ## Filter data
+# Make sure neurons are lateralized and fully connected
 #%%
-
 for sex in ["male", "herm"]:
     file_name = f"{sex}_chem_adj.csv"
 
@@ -61,6 +67,8 @@ for sex in ["male", "herm"]:
 
     nodes.to_csv(OUT_PATH / f"{sex}_chem_nodes.csv")
 
+#%% [markdown]
+# ## End
 #%%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

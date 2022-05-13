@@ -161,7 +161,7 @@ def split_nodes(nodes):
     return left_nodes, right_nodes
 
 
-def create_node_data(node_ids, exceptions=["vBWM", "dgl", "dBWM"]):
+def create_node_data(node_ids, exceptions=[]):
     node_rows = []
 
     for node_id in node_ids:
