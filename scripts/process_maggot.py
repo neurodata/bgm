@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
+import pymaid
+import seaborn as sns
 from pkg.data import DATA_PATH, load_maggot_graph, load_matched
 from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.plot import set_theme
-from pkg.utils import get_seeds
-from pkg.utils import select_lateral_nodes, ensure_connected
 from pkg.pymaid import start_instance
-import pymaid
+from pkg.utils import ensure_connected, get_seeds, select_lateral_nodes
 
 FILENAME = "process_maggot"
 
@@ -98,6 +98,8 @@ series_ids = []
 for annot_name in annot_df["name"]:
     print(annot_name)
     indicator = get_indicator_from_annotation(annot_name)
+    if annot_name == "Imambocus et al":
+        indicator.name = "Imambocus et al. 2022"
     series_ids.append(indicator)
 annotations = pd.concat(series_ids, axis=1, ignore_index=False).fillna(False)
 
@@ -128,7 +130,7 @@ annotations = pd.concat(series_ids, axis=1, ignore_index=False).fillna(False)
 # ]  # A00c?
 
 # nodes = nodes[nodes["class1"].isin(published_types)].copy()
-nodes = nodes[nodes.index.isin(annotations.index)]
+nodes = nodes[nodes.index.isin(annotations.index)].copy()
 adj_df = adj_df.reindex(index=nodes.index, columns=nodes.index)
 
 nodes["pair"] = nodes["pair_id"]
@@ -142,6 +144,34 @@ adj_df, nodes, removed_partner_lcc = select_lateral_nodes(adj_df, nodes)
 # REPEAT in case this removal of partners causes disconnection
 adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
 adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
+
+#%%
+
+annotations_year = [s.split(" ")[-1] for s in annotations.columns]
+annotations_year = pd.Series(data=annotations_year, index=annotations.columns)
+annotations_year = annotations_year.sort_values()
+annotations = annotations.loc[nodes.index]
+annotations = annotations.reindex(columns=annotations_year.index)
+annotations = annotations.sort_values(list(annotations.columns), ascending=False)
+first_locs = np.argmax(annotations.values, axis=1)
+first_published = annotations.columns[first_locs]
+used_papers = first_published.unique()
+counts = first_published.value_counts()
+counts.name = "count"
+# counts = counts.reset_index()
+print("Used papers:")
+print(list(used_papers))
+
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+sns.barplot(x=counts.index, y=counts, ax=ax)
+plt.setp(
+    ax.get_xticklabels(),
+    rotation=45,
+    ha="right",
+    va="center",
+    rotation_mode="anchor",
+)
 
 #%%
 g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)

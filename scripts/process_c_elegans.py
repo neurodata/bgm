@@ -36,7 +36,7 @@ def load_adjacency(path):
 for sex in ["male", "herm"]:
     file_name = f"{sex}_chem_adj.csv"
 
-    raw_path = DATA_PATH / "worm_wiring"
+    raw_path = DATA_PATH / "c_elegans"
     raw_path = raw_path / file_name
 
     adj_df = load_adjacency(raw_path)
