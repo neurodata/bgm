@@ -146,7 +146,7 @@ adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 # ## Plot the resulting adjacency matrix
 #%%
 
-adjplot(adj_df.values, plot_type="scattermap")
+_ = adjplot(adj_df.values, plot_type="scattermap")
 
 #%% [markdown]
 # ## Compute some simple statistics
@@ -213,12 +213,34 @@ counts = first_published.value_counts()
 counts.name = "count"
 
 print("Used papers:")
-print()
 _ = [print(paper) for paper in used_papers]
 print()
 print()
 print("Papers in 'papers' annotation not in this list:")
 _ = [print(paper) for paper in np.setdiff1d(annotations.columns, used_papers)]
+
+#%% [markdown]
+# - [Heckscher et al. 2015](https://www.cell.com/neuron/fulltext/S0896-6273(15)00766-7?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0896627315007667%3Fshowall%3Dtrue)
+# - [Ohyama, Schneider-Mizell et al. 2015](https://www.nature.com/articles/nature14297)
+# - [Berck, Khandelwal et al. 2016](https://elifesciences.org/articles/14859)
+# - [Fushiki et al. 2016](https://elifesciences.org/articles/13253)
+# - [Jovanic, Schneider-Mizell et al. 2016](https://www.cell.com/cell/fulltext/S0092-8674(16)31242-9?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867416312429%3Fshowall%3Dtrue)
+# - [Schlegel et al. 2016](https://elifesciences.org/articles/16799)
+# - [Zwart et al. 2016](https://www.cell.com/neuron/comments/S0896-6273(16)30309-9)
+# - [Eichler, Li, Litwin-Kumar et al. 2017](https://www.nature.com/articles/nature23455)
+# - [Gerhard et al. 2017](https://elifesciences.org/articles/29089)
+# - [Larderet, Fritsch et al. 2017](https://elifesciences.org/articles/28387)
+# - [Takagi et al. 2017](https://www.sciencedirect.com/science/article/pii/S089662731731022X)
+# - [Burgos et al 2018](https://elifesciences.org/articles/26016)
+# - [Carreira-Rosario, Arzan Zarin, Clark et al. 2018](https://elifesciences.org/articles/38554)
+# - [Miroschnikow et al. 2018](https://elifesciences.org/articles/40247)
+# - [Tastekin et al. 2018](https://elifesciences.org/articles/38740)
+# - [Jovanic et al. 2019](https://www.cell.com/current-biology/fulltext/S0960-9822(19)30011-9?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0960982219300119%3Fshowall%3Dtrue)
+# - [Mark et al. 2019]() `missing`
+# - [Zarin, Mark et al. 2019](https://elifesciences.org/articles/51781)
+# - [Eschbach, Fushiki et al. 2020](https://www.nature.com/articles/s41593-020-0607-9)
+# - [Hueckesfeld et al. 2020](https://elifesciences.org/articles/65745) (actually published 2021)
+# - [Eschbach, Fushiki et al. 2020b](https://elifesciences.org/articles/62567) (actually published 2021)
 
 #%% [markdown]
 # ### Plot the breakdown of first-published neurons by paper

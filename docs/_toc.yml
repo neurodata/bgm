@@ -3,7 +3,7 @@ root: abstract
 parts:
   - caption: Preliminaries
     chapters:
-    - file: demonstrate
+    - file: explain
   - caption: Experiments
     chapters: 
     - file: simulations
