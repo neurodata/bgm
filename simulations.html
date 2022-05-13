@@ -59,7 +59,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Connectome data" href="connectomes.html" />
-    <link rel="prev" title="Abstract" href="abstract.html" />
+    <link rel="prev" title="Explain GM vs. BGM" href="explain.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -100,6 +100,18 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="abstract.html">
    Abstract
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Preliminaries
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="explain.html">
+   Explain GM vs. BGM
   </a>
  </li>
 </ul>
@@ -318,7 +330,9 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">FIG_PATH</span><span class="p">,</span> <span class="n">OUT_PATH</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">glue</span> <span class="k">as</span> <span class="n">default_glue</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">savefig</span>
-<span class="kn">from</span> <span class="nn">pkg.match</span> <span class="kn">import</span> <span class="n">BisectedGraphMatchSolver</span><span class="p">,</span> <span class="n">GraphMatchSolver</span>
+
+<span class="c1"># from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver</span>
+<span class="kn">from</span> <span class="nn">giskard.match</span> <span class="kn">import</span> <span class="n">GraphMatchSolver</span>
 <span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">method_palette</span><span class="p">,</span> <span class="n">set_theme</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
@@ -435,31 +449,24 @@ recovered permutation.</p></li>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">contra_rho</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_sims</span><span class="p">),</span> <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_sims</span><span class="p">),</span> <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">contra_rho</span><span class="p">)):</span>
         <span class="c1"># simulate the correlated subgraphs</span>
         <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">er_corr</span><span class="p">(</span><span class="n">n_side</span><span class="p">,</span> <span class="n">ipsi_p</span><span class="p">,</span> <span class="n">ipsi_rho</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">AB</span><span class="p">,</span> <span class="n">BA</span> <span class="o">=</span> <span class="n">er_corr</span><span class="p">(</span><span class="n">n_side</span><span class="p">,</span> <span class="n">contra_p</span><span class="p">,</span> <span class="n">contra_rho</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># construct the full network</span>
-        <span class="n">indices_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_side</span><span class="p">)</span>
-        <span class="n">indices_B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_side</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_side</span><span class="p">)</span>
-        <span class="n">adjacency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_side</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_side</span><span class="p">))</span>
-        <span class="n">adjacency</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices_A</span><span class="p">,</span> <span class="n">indices_A</span><span class="p">)]</span> <span class="o">=</span> <span class="n">A</span>
-        <span class="n">adjacency</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices_B</span><span class="p">,</span> <span class="n">indices_B</span><span class="p">)]</span> <span class="o">=</span> <span class="n">B</span>
-        <span class="n">adjacency</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices_A</span><span class="p">,</span> <span class="n">indices_B</span><span class="p">)]</span> <span class="o">=</span> <span class="n">AB</span>
-        <span class="n">adjacency</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices_B</span><span class="p">,</span> <span class="n">indices_A</span><span class="p">)]</span> <span class="o">=</span> <span class="n">BA</span>
-
-        <span class="c1"># permute one hemisphere</span>
-        <span class="n">side_perm</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">n_side</span><span class="p">)</span> <span class="o">+</span> <span class="n">n_side</span>
-        <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">indices_A</span><span class="p">,</span> <span class="n">side_perm</span><span class="p">))</span>
-        <span class="n">adjacency</span> <span class="o">=</span> <span class="n">adjacency</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">perm</span><span class="p">)]</span>
-        <span class="n">undo_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">side_perm</span><span class="p">)</span>
+        <span class="c1"># permute one side as appropriate</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">n_side</span><span class="p">)</span>
+        <span class="n">undo_perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">perm</span><span class="p">][:,</span> <span class="n">perm</span><span class="p">]</span>
+        <span class="n">AB</span> <span class="o">=</span> <span class="n">AB</span><span class="p">[:,</span> <span class="n">perm</span><span class="p">]</span>
+        <span class="n">BA</span> <span class="o">=</span> <span class="n">BA</span><span class="p">[</span><span class="n">perm</span><span class="p">,</span> <span class="p">:]</span>
 
         <span class="c1"># run the matching</span>
-        <span class="k">for</span> <span class="n">Solver</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">BisectedGraphMatchSolver</span><span class="p">,</span> <span class="n">GraphMatchSolver</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;BGM&quot;</span><span class="p">,</span> <span class="s2">&quot;GM&quot;</span><span class="p">]</span>
-        <span class="p">):</span>
-            <span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">(</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">indices_A</span><span class="p">,</span> <span class="n">indices_B</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;GM&quot;</span><span class="p">,</span> <span class="s2">&quot;BGM&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GM&quot;</span><span class="p">:</span>
+                <span class="n">solver</span> <span class="o">=</span> <span class="n">GraphMatchSolver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BGM&quot;</span><span class="p">:</span>
+                <span class="n">solver</span> <span class="o">=</span> <span class="n">GraphMatchSolver</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">AB</span><span class="o">=</span><span class="n">AB</span><span class="p">,</span> <span class="n">BA</span><span class="o">=</span><span class="n">BA</span><span class="p">)</span>
             <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
             <span class="n">match_ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">permutation_</span> <span class="o">==</span> <span class="n">undo_perm</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
@@ -478,7 +485,7 @@ recovered permutation.</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                                                                              
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                    
 </pre></div>
 </div>
 </div>
@@ -544,8 +551,8 @@ regions show 95% confidence intervals.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:18.458116
-Completed at 2022-05-04 14:41:47.739058
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:35.014325
+Completed at 2022-05-13 17:16:14.551572
 </pre></div>
 </div>
 </div>
@@ -578,11 +585,11 @@ Completed at 2022-05-04 14:41:47.739058
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="abstract.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="explain.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Abstract</p>
+            <p class="prev-next-title">Explain GM vs. BGM</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="connectomes.html" title="next page">
