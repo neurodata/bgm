@@ -1,9 +1,6 @@
 format: jb-book
 root: abstract
 parts:
-  - caption: Preliminaries
-    chapters:
-    - file: introduction
-  - caption: Results
+  - caption: Experiments
     chapters: 
     - file: simulations
