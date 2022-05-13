@@ -44,7 +44,8 @@ def gluefig(name, fig, **kwargs):
 t0 = time.time()
 rng = np.random.default_rng(8888)
 
-
+#%% [markdown]
+# ## Load processed data, run matching experiment
 #%%
 
 
@@ -59,7 +60,7 @@ def get_hemisphere_indices(nodes):
     return left_indices, right_indices
 
 
-RERUN_SIMS = True
+RERUN_SIMS = False
 datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
 
 n_sims = 50
@@ -82,16 +83,12 @@ for dataset in datasets:
         seeds = rng.integers(np.iinfo(np.uint32).max, size=n_sims)
         rows = []
         for sim, seed in enumerate(tqdm(seeds, leave=False)):
-            # for Solver, method in zip(
-            #     [BisectedGraphMatchSolver, GraphMatchSolver], ["BGM", "GM"]
-            # ):
             for method in ["GM", "BGM"]:
                 if method == "GM":
                     solver = GraphMatchSolver(A, B, rng=seed)
                 elif method == "BGM":
                     solver = GraphMatchSolver(A, B, AB=AB, BA=BA, rng=seed)
                 run_start = time.time()
-                # solver = Solver(adj, left_inds, right_inds, rng=seed)
                 solver.solve()
                 match_ratio = (solver.permutation_ == np.arange(n_side)).mean()
                 elapsed = time.time() - run_start
@@ -114,34 +111,8 @@ for dataset in datasets:
         results = pd.read_csv(OUT_PATH / f"{dataset}_match_results.csv", index_col=0)
     results_by_dataset[dataset] = results
 
-# #%%
-
-# from graspologic.plot import heatmap
-
-# # heatmap(adj, inner_hier_labels=nodes["hemisphere"], transform="binarize")
-
-# fig, axs = plt.subplots(2, 2, figsize=(10, 10))
-# heatmap(
-#     adj[np.ix_(left_inds, left_inds)], ax=axs[0, 0], cbar=False, transform="binarize"
-# )
-# heatmap(
-#     adj[np.ix_(right_inds, right_inds)], ax=axs[0, 1], cbar=False, transform="binarize"
-# )
-# heatmap(
-#     adj[np.ix_(left_inds, right_inds)], ax=axs[1, 0], cbar=False, transform="binarize"
-# )
-# heatmap(
-#     adj[np.ix_(right_inds, left_inds)], ax=axs[1, 1], cbar=False, transform="binarize"
-# )
-# fig.set_facecolor("w")
-
-# #%%
-# list(
-#     zip(
-#         nodes[nodes["hemisphere"] == "L"].index, nodes[nodes["hemisphere"] == "R"].index
-#     )
-# )
-
+#%% [markdown]
+# ## Plot the matching accuracy showing each random seed
 #%%
 
 set_theme(font_scale=1.2)
@@ -238,7 +209,8 @@ for ax in axs.flat:
         ax.axis("off")
 
 # gluefig("match_accuracy_comparison_lines", fig)
-
+#%% [markdown]
+# ## Plot the matching accuracy in aggregate
 # %%
 
 all_results = []
@@ -337,6 +309,8 @@ ax.xaxis.set_label_coords(-0.1, -0.17)
 
 gluefig("match_accuracy_comparison", fig)
 
+#%% [markdown]
+# ## End
 #%%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

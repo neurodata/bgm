@@ -7,6 +7,7 @@ parts:
   - caption: Experiments
     chapters: 
     - file: simulations
+    - file: connectomes
   - caption: Data wrangling
     chapters:
     - file: process_c_elegans
