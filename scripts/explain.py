@@ -1,18 +1,20 @@
 #%% [markdown]
-# # Explain
-
+# # Explain GM vs. BGM
 #%%
 import datetime
 import time
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from graspologic.plot import heatmap
+from graspologic.simulations import er_corr
+from matplotlib.patches import Rectangle
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.plot import set_theme
+from matplotlib.patheffects import Normal, Stroke
 
 FILENAME = "explain"
 
@@ -47,9 +49,6 @@ fig, axs = plt.subplots(
     gridspec_kw=dict(wspace=0.5, height_ratios=[1, 0.2], hspace=0),
 )
 
-from graspologic.simulations import er_corr
-from graspologic.plot import heatmap
-from matplotlib.patches import Rectangle
 
 n = 10
 A, B = er_corr(n, 0.3, 0.9, directed=True)
@@ -115,9 +114,6 @@ def annotated_heatmap(
     for line_obj in lines:
         line_obj.remove()
     return ax
-
-
-from matplotlib.patheffects import Normal, Stroke
 
 
 def nice_text(x, y, s, ax, color="black", fontsize="x-large"):
@@ -359,6 +355,8 @@ multicolor_text(
 
 gluefig("explain", fig)
 
+#%% [markdown]
+# ## End
 #%%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

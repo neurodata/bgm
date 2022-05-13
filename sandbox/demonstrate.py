@@ -1,4 +1,5 @@
-#%% 
+#%% [markdown]
+# # Explain GM vs. BGM
 #%%
 
 import datetime
@@ -6,14 +7,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 from giskard.plot import scattermap
 from graspologic.simulations import er_corr
 from matplotlib.patheffects import Normal, Stroke
 from pkg.io import FIG_PATH, OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
 from pkg.plot import set_theme, subgraph_palette
 
 
@@ -199,6 +198,8 @@ def draw_label(source, target, edgecolor="black"):
 fig, ax = plt.subplots(3, 3, gridspec_kw=dict(width_ratios=[1, 1, 1]))
 
 
+#%% [markdown]
+# ## End
 # %%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

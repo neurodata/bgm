@@ -10,16 +10,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from giskard.match import GraphMatchSolver
 from giskard.plot import matched_stripplot
 from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-
-# from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
 from pkg.plot import method_palette, set_theme
 from scipy.stats import wilcoxon
 from tqdm import tqdm
+
 
 FILENAME = "connectomes"
 
@@ -59,14 +59,11 @@ def get_hemisphere_indices(nodes):
     return left_indices, right_indices
 
 
-RERUN_SIMS = False
+RERUN_SIMS = True
 datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
-
-# datasets = ["annelid_visual"]
 
 n_sims = 50
 glue("n_initializations", n_sims)
-from giskard.match import GraphMatchSolver
 
 results_by_dataset = {}
 for dataset in datasets:
