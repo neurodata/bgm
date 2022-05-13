@@ -617,7 +617,7 @@ a forthcoming paper (Winding, Pedigo et al. 2022) which were previously publishe
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;AxesSubplot:&gt;,
- &lt;mpl_toolkits.axes_grid1.axes_divider.AxesDivider at 0x1403c1190&gt;)
+ &lt;mpl_toolkits.axes_grid1.axes_divider.AxesDivider at 0x13ece8190&gt;)
 </pre></div>
 </div>
 <img alt="_images/process_maggot_15_1.png" src="_images/process_maggot_15_1.png" />
@@ -795,12 +795,18 @@ dtype: object
 <span class="n">counts</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;count&quot;</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Used papers:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
 <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">print</span><span class="p">(</span><span class="n">paper</span><span class="p">)</span> <span class="k">for</span> <span class="n">paper</span> <span class="ow">in</span> <span class="n">used_papers</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Papers in &#39;papers&#39; annotation not in this list:&quot;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="nb">print</span><span class="p">(</span><span class="n">paper</span><span class="p">)</span> <span class="k">for</span> <span class="n">paper</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">annotations</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">used_papers</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Used papers:
+
 Heckscher et al. 2015
 Ohyama, Schneider-Mizell et al. 2015
 Berck, Khandelwal et al. 2016
@@ -822,6 +828,11 @@ Zarin, Mark et al. 2019
 Eschbach, Fushiki et al. 2020
 Hueckesfeld et al. 2020
 Eschbach, Fushiki et al. 2020b
+
+
+Papers in &#39;papers&#39; annotation not in this list:
+Andrade et al. 2019
+Valdes-Aleman et al. 2021
 </pre></div>
 </div>
 </div>
@@ -862,8 +873,8 @@ Eschbach, Fushiki et al. 2020b
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:11.583471
-Completed at 2022-05-13 13:37:16.074535
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:11.414091
+Completed at 2022-05-13 13:48:52.423437
 </pre></div>
 </div>
 </div>
