@@ -1,3 +1,5 @@
+#%% [markdown]
+# # Maggot connectome subset
 #%%
 import datetime
 import logging
@@ -9,7 +11,7 @@ import numpy as np
 import pandas as pd
 import pymaid
 import seaborn as sns
-from pkg.data import DATA_PATH, 
+from pkg.data import DATA_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.plot import set_theme
@@ -39,47 +41,17 @@ t0 = time.time()
 set_theme()
 rng = np.random.default_rng(8888)
 
-# #%%
-# left_adj, left_nodes = load_matched("left")
-# right_adj, right_nodes = load_matched("right")
-# left_nodes["inds"] = range(len(left_nodes))
-# right_nodes["inds"] = range(len(right_nodes))
-# seeds = get_seeds(left_nodes, right_nodes)
-# all_nodes = pd.concat((left_nodes, right_nodes))
-# all_nodes["inds"] = range(len(all_nodes))
 
-# left_nodes.iloc[seeds[0]]["pair_id"]
-
-# assert len(left_nodes) == len(right_nodes)
-
-
-# #%%
-# mg = load_maggot_graph()
-# all_left = mg.nodes[mg.nodes["left"]].index
-# all_right = mg.nodes[mg.nodes["right"]].index
-
-# m_ll = mg.node_subgraph(all_left, all_left).summary_statistics.loc["sum", "n_edges"]
-# m_rr = mg.node_subgraph(all_right, all_right).summary_statistics.loc["sum", "n_edges"]
-# m_lr = mg.node_subgraph(all_left, all_right).summary_statistics.loc["sum", "n_edges"]
-# m_rl = mg.node_subgraph(all_right, all_left).summary_statistics.loc["sum", "n_edges"]
-
-# m_contra = m_lr + m_rl
-# m_ipsi = m_ll + m_rr
-# p_contra = m_contra / (m_ipsi + m_contra)
-# glue("p_contra", p_contra, form="2.0f%")
-
-# #%%
-# mg = mg.node_subgraph(all_nodes.index)
-# adj = mg.sum.adj
-# nodes = all_nodes
-# adj_df = pd.DataFrame(adj.astype(int), index=all_nodes.index, columns=all_nodes.index)
-
+#%% [markdown]
+# ## Start Catmaid instance on Virtual Fly Brain
 #%%
 
 pymaid.CatmaidInstance("https://l1em.catmaid.virtualflybrain.org/", None)
 logging.getLogger("pymaid").setLevel(logging.WARNING)
 pymaid.clear_cache()
 
+#%% [markdown]
+# ## Load the "papers" meta-annotation
 #%%
 
 
@@ -106,39 +78,48 @@ for annot_name in annot_df["name"]:
     series_ids.append(indicator)
 annotations = pd.concat(series_ids, axis=1, ignore_index=False).fillna(False)
 
+#%% [markdown]
+# ## Get the pairings
+# This section is not meant to be rerun - it was used to get the subset of pairs from
+# a forthcoming paper (Winding, Pedigo et al. 2022) which were previously published.
 #%%
 
-# TEMP: code to subset the pairs, not to be run again
-pairs = pd.read_csv("bgm/data/maggot/pairs-2021-04-06.csv")
+# # TEMP: code to subset the pairs, not to be run again
+# pairs = pd.read_csv("bgm/data/maggot/pairs-2021-04-06.csv")
 
-nodes = []
-pair_id_counter = 0
-for _, row in pairs.iterrows():
-    if (row["leftid"] in annotations.index) and (row["rightid"] in annotations.index):
-        nodes.append(
-            {"node_id": row["leftid"], "pair": pair_id_counter, "hemisphere": "L"}
-        )
-        nodes.append(
-            {"node_id": row["rightid"], "pair": pair_id_counter, "hemisphere": "R"}
-        )
-        pair_id_counter += 1
+# nodes = []
+# pair_id_counter = 0
+# for _, row in pairs.iterrows():
+#     if (row["leftid"] in annotations.index) and (row["rightid"] in annotations.index):
+#         nodes.append(
+#             {"node_id": row["leftid"], "pair": pair_id_counter, "hemisphere": "L"}
+#         )
+#         nodes.append(
+#             {"node_id": row["rightid"], "pair": pair_id_counter, "hemisphere": "R"}
+#         )
+#         pair_id_counter += 1
 
-nodes = pd.DataFrame(nodes)
-counts = nodes["node_id"].value_counts()
-duplicates = counts[counts > 1].index
-nodes = nodes.set_index("node_id")
-bad_pairs = nodes.loc[duplicates, "pair"]
-nodes = nodes[~nodes["pair"].isin(bad_pairs)]
+# nodes = pd.DataFrame(nodes)
+# counts = nodes["node_id"].value_counts()
+# duplicates = counts[counts > 1].index
+# nodes = nodes.set_index("node_id")
+# bad_pairs = nodes.loc[duplicates, "pair"]
+# nodes = nodes[~nodes["pair"].isin(bad_pairs)]
 
-nodes.sort_values(["hemisphere", "pair"], inplace=True)
-nodes.to_csv("bgm/data/maggot/nodes.csv")
+# nodes.sort_values(["hemisphere", "pair"], inplace=True)
+# nodes.to_csv("bgm/data/maggot/nodes.csv")
 
+#%% [markdown]
+# ## Load the pair data
+# Saved locally, these are just published neurons
 #%%
 
 raw_path = DATA_PATH / "maggot"
 
 nodes = pd.read_csv(raw_path / "nodes.csv", index_col=0)
 
+#%% [markdown]
+# ## Load their connectivity data
 #%%
 
 adj_df = pymaid.adjacency_matrix(nodes.index.values)
@@ -146,37 +127,10 @@ adj_df = pd.DataFrame(
     data=adj_df.values.astype(int), index=adj_df.index, columns=adj_df.columns
 )
 
+#%% [markdown]
+# ## Filter data
+# Make sure neurons are lateralized and fully connected
 #%%
-# published_types = [
-#     "LON",
-#     "mPN",
-#     "RGN",
-#     "uPN",
-#     "MBIN",
-#     "FFN",
-#     "FB2N",
-#     "tPN",
-#     "KC",
-#     "dVNC;RGN",
-#     "MBON",
-#     "FAN",
-#     "pLN",
-#     "FBN",
-#     "cLN",
-#     "bLN",
-#     "vPN",
-#     "APL",
-#     "motor",
-#     "sens",
-#     "keystone",
-# ]  # A00c?
-
-# nodes = nodes[nodes["class1"].isin(published_types)].copy()
-# nodes = nodes[nodes.index.isin(annotations.index)].copy()
-# adj_df = adj_df.reindex(index=nodes.index, columns=nodes.index)
-
-# nodes["pair"] = nodes["pair_id"]
-
 
 adj_df, nodes, removed_nonlateral = select_lateral_nodes(adj_df, nodes)
 # then ensure the network is fully connected
@@ -187,18 +141,38 @@ adj_df, nodes, removed_partner_lcc = select_lateral_nodes(adj_df, nodes)
 adj_df, nodes, removed_lcc2 = ensure_connected(adj_df, nodes)
 adj_df, nodes, removed_partner_lcc2 = select_lateral_nodes(adj_df, nodes)
 
+#%% [markdown]
+# ## Compute some simple statistics
+#%%
+left_index = nodes[nodes["hemisphere"] == "L"].index
+right_index = nodes[nodes["hemisphere"] == "R"].index
+
+m_ll = np.count_nonzero(adj_df.loc[left_index, left_index])
+m_rr = np.count_nonzero(adj_df.loc[right_index, right_index])
+m_lr = np.count_nonzero(adj_df.loc[left_index, right_index])
+m_rl = np.count_nonzero(adj_df.loc[right_index, left_index])
+
+m_contra = m_lr + m_rl
+m_ipsi = m_ll + m_rr
+p_contra = m_contra / (m_ipsi + m_contra)
+glue("p_contra", p_contra, form="2.0f%")
+print(f"Probability of an edge being a contralateral: {p_contra:.2f}")
+
+#%% [markdown]
+# ## Examine annotations of the neurons used here
 #%%
 
 annotations_year = [s.split(" ")[-1] for s in annotations.columns]
 annotations_year = pd.Series(data=annotations_year, index=annotations.columns)
-annotations_year = annotations_year.sort_values()
+annotations_year = annotations_year.sort_index()
+annotations_year = annotations_year.sort_values(kind="stable")
 annotations = annotations.loc[nodes.index]
-
-
-#%%
 annotations = annotations.reindex(columns=annotations_year.index)
 annotations = annotations.sort_values(list(annotations.columns), ascending=False)
 
+#%% [markdown]
+# ### Examples of neurons published on twice in the same year
+# %%
 n_pubs = annotations.sum(axis=1)
 multi_pub_annotations = annotations[n_pubs > 1]
 
@@ -210,20 +184,25 @@ for idx, row in multi_pub_annotations.iterrows():
         print(annotations_year[row])
         print()
 
+#%% [markdown]
+# ### Get all papers for which one of our neurons was published for the first time
 #%%
 first_locs = np.argmax(annotations.values, axis=1)
 first_published = annotations.columns[first_locs]
 used_papers = first_published.unique()
 counts = first_published.value_counts()
 counts.name = "count"
-# counts = counts.reset_index()
+
 print("Used papers:")
-print(list(used_papers))
+_ = [print(paper) for paper in used_papers]
 
-
-fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+#%% [markdown]
+# ### Plot the breakdown of first-published neurons by paper
+#%%
+fig, ax = plt.subplots(1, 1, figsize=(12, 6))
 sns.barplot(x=counts.index, y=counts, ax=ax)
-plt.setp(
+ax.set(ylabel="# first published neurons")
+_ = plt.setp(
     ax.get_xticklabels(),
     rotation=45,
     ha="right",
@@ -231,6 +210,8 @@ plt.setp(
     rotation_mode="anchor",
 )
 
+#%% [markdown]
+# ## Save the finalized network and node metadata
 #%%
 g = nx.from_pandas_adjacency(adj_df, create_using=nx.DiGraph)
 
@@ -240,6 +221,8 @@ nx.write_edgelist(
 
 nodes.to_csv(OUT_PATH / "maggot_subset_nodes.csv")
 
+#%% [markdown]
+# ## End
 #%%
 elapsed = time.time() - t0
 delta = datetime.timedelta(seconds=elapsed)

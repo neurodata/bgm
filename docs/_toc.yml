@@ -1,6 +1,12 @@
 format: jb-book
 root: abstract
 parts:
+  - caption: Preliminaries
+    chapters:
+    - file: demonstrate
   - caption: Experiments
     chapters: 
     - file: simulations
+  - caption: Data wrangling
+    chapters:
+    - file: process_maggot
