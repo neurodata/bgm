@@ -213,7 +213,12 @@ counts = first_published.value_counts()
 counts.name = "count"
 
 print("Used papers:")
+print()
 _ = [print(paper) for paper in used_papers]
+print()
+print()
+print("Papers in 'papers' annotation not in this list:")
+_ = [print(paper) for paper in np.setdiff1d(annotations.columns, used_papers)]
 
 #%% [markdown]
 # ### Plot the breakdown of first-published neurons by paper
