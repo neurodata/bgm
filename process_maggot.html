@@ -56,7 +56,8 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="_static/nd_logo_small.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Simulation" href="simulations.html" />
+    <link rel="next" title="P. pacificus pharynx connectomes" href="process_p_pacificus.html" />
+    <link rel="prev" title="C. elegans connectomes" href="process_c_elegans.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -118,9 +119,25 @@ const thebe_selector_output = ".output, .cell_output"
  </span>
 </p>
 <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="process_c_elegans.html">
+   <em>
+    C. elegans
+   </em>
+   connectomes
+  </a>
+ </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Maggot connectome subset
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="process_p_pacificus.html">
+   <em>
+    P. pacificus
+   </em>
+   pharynx connectomes
   </a>
  </li>
 </ul>
@@ -241,8 +258,18 @@ const thebe_selector_output = ".output, .cell_output"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#plot-the-resulting-adjacency-matrix">
+   Plot the resulting adjacency matrix
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#compute-some-simple-statistics">
    Compute some simple statistics
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#save-the-finalized-network-and-node-metadata">
+   Save the finalized network and node metadata
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -266,11 +293,6 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
    </li>
   </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#save-the-finalized-network-and-node-metadata">
-   Save the finalized network and node metadata
-  </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#end">
@@ -328,8 +350,18 @@ const thebe_selector_output = ".output, .cell_output"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#plot-the-resulting-adjacency-matrix">
+   Plot the resulting adjacency matrix
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#compute-some-simple-statistics">
    Compute some simple statistics
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#save-the-finalized-network-and-node-metadata">
+   Save the finalized network and node metadata
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -353,11 +385,6 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
    </li>
   </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#save-the-finalized-network-and-node-metadata">
-   Save the finalized network and node metadata
-  </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#end">
@@ -387,6 +414,7 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pymaid</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">graspologic.plot</span> <span class="kn">import</span> <span class="n">adjplot</span>
 <span class="kn">from</span> <span class="nn">pkg.data</span> <span class="kn">import</span> <span class="n">DATA_PATH</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">glue</span> <span class="k">as</span> <span class="n">default_glue</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">savefig</span>
@@ -574,6 +602,23 @@ a forthcoming paper (Winding, Pedigo et al. 2022) which were previously publishe
 </div>
 </div>
 </div>
+<div class="section" id="plot-the-resulting-adjacency-matrix">
+<h2>Plot the resulting adjacency matrix<a class="headerlink" href="#plot-the-resulting-adjacency-matrix" title="Permalink to this headline">¶</a></h2>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adjplot</span><span class="p">(</span><span class="n">adj_df</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;scattermap&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;AxesSubplot:&gt;,
+ &lt;mpl_toolkits.axes_grid1.axes_divider.AxesDivider at 0x1403c1190&gt;)
+</pre></div>
+</div>
+<img alt="_images/process_maggot_15_1.png" src="_images/process_maggot_15_1.png" />
+</div>
+</div>
+</div>
 <div class="section" id="compute-some-simple-statistics">
 <h2>Compute some simple statistics<a class="headerlink" href="#compute-some-simple-statistics" title="Permalink to this headline">¶</a></h2>
 <div class="cell tag_hide-input docutils container">
@@ -596,6 +641,22 @@ a forthcoming paper (Winding, Pedigo et al. 2022) which were previously publishe
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Probability of an edge being a contralateral: 0.35
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="save-the-finalized-network-and-node-metadata">
+<h2>Save the finalized network and node metadata<a class="headerlink" href="#save-the-finalized-network-and-node-metadata" title="Permalink to this headline">¶</a></h2>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_adjacency</span><span class="p">(</span><span class="n">adj_df</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">write_edgelist</span><span class="p">(</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">OUT_PATH</span> <span class="o">/</span> <span class="s2">&quot;maggot_subset_edgelist.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">nodes</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUT_PATH</span> <span class="o">/</span> <span class="s2">&quot;maggot_subset_nodes.csv&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -779,23 +840,7 @@ Eschbach, Fushiki et al. 2020b
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/process_maggot_23_0.png" src="_images/process_maggot_23_0.png" />
-</div>
-</div>
-</div>
-</div>
-<div class="section" id="save-the-finalized-network-and-node-metadata">
-<h2>Save the finalized network and node metadata<a class="headerlink" href="#save-the-finalized-network-and-node-metadata" title="Permalink to this headline">¶</a></h2>
-<div class="cell tag_hide-input docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_adjacency</span><span class="p">(</span><span class="n">adj_df</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
-
-<span class="n">nx</span><span class="o">.</span><span class="n">write_edgelist</span><span class="p">(</span>
-    <span class="n">g</span><span class="p">,</span> <span class="n">OUT_PATH</span> <span class="o">/</span> <span class="s2">&quot;maggot_subset_edgelist.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span>
-<span class="p">)</span>
-
-<span class="n">nodes</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUT_PATH</span> <span class="o">/</span> <span class="s2">&quot;maggot_subset_nodes.csv&quot;</span><span class="p">)</span>
-</pre></div>
+<img alt="_images/process_maggot_27_0.png" src="_images/process_maggot_27_0.png" />
 </div>
 </div>
 </div>
@@ -812,8 +857,8 @@ Eschbach, Fushiki et al. 2020b
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:10.460662
-Completed at 2022-05-13 13:23:31.066177
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:11.583471
+Completed at 2022-05-13 13:37:16.074535
 </pre></div>
 </div>
 </div>
@@ -846,12 +891,19 @@ Completed at 2022-05-13 13:23:31.066177
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="simulations.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="process_c_elegans.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Simulation</p>
+            <p class="prev-next-title"><em>C. elegans</em> connectomes</p>
         </div>
+    </a>
+    <a class='right-next' id="next-link" href="process_p_pacificus.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><em>P. pacificus</em> pharynx connectomes</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
     </a>
 </div>
             
