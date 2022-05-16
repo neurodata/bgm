@@ -60,12 +60,28 @@ def get_hemisphere_indices(nodes):
     return left_indices, right_indices
 
 
-RERUN_SIMS = False
+# def compute_density
+
+
+def compute_contralateral_ratio(A, B, AB, BA, agg="nonzero"):
+    if agg == "nonzero":
+        aggfunc = np.count_nonzero
+    elif agg == "sum":
+        aggfunc = np.sum
+    m_A = aggfunc(A)
+    m_B = aggfunc(B)
+    m_AB = aggfunc(AB)
+    m_BA = aggfunc(BA)
+    return (m_AB + m_BA) / (m_A + m_B + m_AB + m_BA)
+
+
+RERUN_SIMS = True
 datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
 
 n_sims = 50
 glue("n_initializations", n_sims)
 
+contra_weight_ratios = {}
 results_by_dataset = {}
 for dataset in datasets:
     adj, nodes = load_split_connectome(dataset)
@@ -73,12 +89,21 @@ for dataset in datasets:
     glue(f"{dataset}_n_nodes", n_nodes, form="long")
     n_edges = np.count_nonzero(adj)
     glue(f"{dataset}_n_edges", n_edges, form="long")
+
+    left_inds, right_inds = get_hemisphere_indices(nodes)
+    A = adj[left_inds][:, left_inds]
+    B = adj[right_inds][:, right_inds]
+    AB = adj[left_inds][:, right_inds]
+    BA = adj[right_inds][:, left_inds]
+
+    contra_edge_ratio = compute_contralateral_ratio(A, B, AB, BA, agg="nonzero")
+    glue(f"{dataset}_contra_edge_ratio", contra_edge_ratio, form="2.0f%")
+    contra_weight_ratio = compute_contralateral_ratio(A, B, AB, BA, agg="sum")
+    glue(f"{dataset}_contra_weight_ratio", contra_weight_ratio, form="2.0f%")
+    contra_weight_ratios[dataset] = contra_weight_ratio
+
     if RERUN_SIMS:
-        left_inds, right_inds = get_hemisphere_indices(nodes)
-        A = adj[left_inds][:, left_inds]
-        B = adj[right_inds][:, right_inds]
-        AB = adj[left_inds][:, right_inds]
-        BA = adj[right_inds][:, left_inds]
+
         n_side = len(left_inds)
         seeds = rng.integers(np.iinfo(np.uint32).max, size=n_sims)
         rows = []
@@ -126,8 +151,8 @@ nice_dataset_map = {
     "male_chem": "C. elegans\nmale",
     "maggot": "Maggot",
     "maggot_subset": "D. melanogaster\n larva brain subset",
-    "specimen_107": "P. pacificus\npharynx 2",
-    "specimen_148": "P. pacificus\npharynx 1",
+    "specimen_107": "P. pacificus\npharynx 1",
+    "specimen_148": "P. pacificus\npharynx 2",
 }
 
 n_rows = int(np.ceil(n_datasets / 3))
@@ -141,7 +166,7 @@ fig, axs = plt.subplots(
     gridspec_kw=dict(hspace=0.1),
 )
 pvalues = {}
-
+acc_changes = {}
 for i, (dataset, results) in enumerate(results_by_dataset.items()):
     index = np.unravel_index(i, (n_rows, n_cols))
     ax = axs[index]
@@ -181,6 +206,7 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
 
     improvement = bgm_results["match_ratio"].mean() - gm_results["match_ratio"].mean()
     glue(f"{dataset}_mean_accuracy_change", improvement, form="2.0f%")
+    acc_changes[dataset] = improvement
 
     for i, method in enumerate(order):
         mean_match_ratio = results[results["method"] == method]["match_ratio"].mean()
@@ -208,7 +234,18 @@ for ax in axs.flat:
     if not ax.has_data():
         ax.axis("off")
 
-# gluefig("match_accuracy_comparison_lines", fig)
+#%%
+
+datas = [contra_weight_ratios, acc_changes]
+meta_results = pd.DataFrame(
+    datas, index=["Contralateral weight ratio", "Accuracy improvement"]
+).T
+meta_results
+fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+sns.scatterplot(
+    data=meta_results, y="Accuracy improvement", x="Contralateral weight ratio", ax=ax
+)
+
 #%% [markdown]
 # ## Plot the matching accuracy in aggregate
 # %%
@@ -225,7 +262,12 @@ all_results
 mpl.rcParams["hatch.linewidth"] = 2.0
 
 set_theme(font_scale=1.2)
-order = all_results.groupby("dataset")["match_ratio"].mean().sort_values().index
+
+# was for sorting by accuracy
+# order = all_results.groupby("dataset")["match_ratio"].mean().sort_values().index
+order = pd.Series(
+    ["specimen_107", "specimen_148", "herm_chem", "male_chem", "maggot_subset"]
+)
 fig, ax = plt.subplots(1, 1, figsize=(10, 6))
 
 
