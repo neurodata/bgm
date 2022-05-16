@@ -5,3 +5,4 @@ rm $BASE_DIR/results/glued_variables.json
 echo {}> $BASE_DIR/results/glued_variables.json
 
 rm $BASE_DIR/results/glued_variables.txt
+touch $BASE_DIR/results/glued_variables.txt

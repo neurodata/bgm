@@ -149,6 +149,7 @@ docs/glued_variables.txt
 
 # not storing the data for now 
 data/*
+!data/README.md
 !data/processed_split
 !data/c_elegans
 !data/p_pacificus
