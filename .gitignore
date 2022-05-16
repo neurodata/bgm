@@ -152,3 +152,5 @@ data/*
 !data/processed_split
 !data/c_elegans
 !data/p_pacificus
+!data/maggot
+data/maggot/pairs-2021-04-06.csv
