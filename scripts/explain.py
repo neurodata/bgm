@@ -15,6 +15,7 @@ from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.plot import set_theme
 from matplotlib.patheffects import Normal, Stroke
+from pkg.plot import multicolor_text
 
 FILENAME = "explain"
 
@@ -274,10 +275,47 @@ nice_text(-0.6 * n, n, r"$+$", ax=ax, fontsize=40)
 
 ax = axs[1, 0]
 ax.axis("off")
+multicolor_text(
+    -0.27,
+    1.1,
+    [
+        r"Ipsilateral$\rightarrow$",
+        r"$A_{LL}$",
+        ',',
+        r"$A_{RR}$",
+    ],
+    colors=[
+        "black",
+        palette["LL"],
+        'black',
+        palette["RR"],
+    ],
+    spaces=[True, False, True],
+    ax=ax,
+    fontsize="x-large",
+)
+multicolor_text(
+    -0.27,
+    0.6,
+    [
+        r"Contralateral$\rightarrow$",
+        r"$A_{LR}$",
+        ',',
+        r"$A_{RL}$",
+    ],
+    colors=[
+        "black",
+        palette["LR"],
+        'black',
+        palette["RL"],
+    ],
+    spaces=[True, False, True],
+    ax=ax,
+    fontsize="x-large",
+)
 
 ax = axs[1, 1]
 ax.axis("off")
-from pkg.plot import multicolor_text
 
 multicolor_text(
     -0.2,
