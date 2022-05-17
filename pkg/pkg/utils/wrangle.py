@@ -189,3 +189,23 @@ def create_node_data(node_ids, exceptions=[]):
     nodes = pd.DataFrame(node_rows).set_index("node_id")
 
     return nodes
+
+
+def get_hemisphere_indices(nodes):
+    nodes = nodes.copy()
+    nodes["_inds"] = np.arange(len(nodes))
+    left_nodes = nodes[nodes["hemisphere"] == "L"]
+    right_nodes = nodes[nodes["hemisphere"] == "R"]
+    assert (left_nodes["pair"].values == right_nodes["pair"].values).all()
+    left_indices = left_nodes["_inds"].values
+    right_indices = right_nodes["_inds"].values
+    return left_indices, right_indices
+
+
+def split_connectome(adj, nodes):
+    left_inds, right_inds = get_hemisphere_indices(nodes)
+    A = adj[left_inds][:, left_inds]
+    B = adj[right_inds][:, right_inds]
+    AB = adj[left_inds][:, right_inds]
+    BA = adj[right_inds][:, left_inds]
+    return A, B, AB, BA
