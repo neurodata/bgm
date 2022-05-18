@@ -70,7 +70,6 @@ reproducible environment for running the code for this project.
 *Coming soon*
 
 ### Data 
-*Coming soon*
 The raw data is copied from the papers cited (see Table 1 in the paper) and included
 in this repository. There are also scripts to process the raw data into a format that
 is amenable for matching, see `scripts/process_c_elegans.py`, 
