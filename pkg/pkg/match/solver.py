@@ -18,7 +18,9 @@ from graspologic.types import AdjacencyMatrix, List, Tuple
 # Type aliases
 PaddingType = Literal["adopted", "naive"]
 InitMethodType = Literal["barycenter", "rand", "randomized"]
-RandomStateType = Optional[Union[int, np.random.RandomState, np.random.Generator]]
+RandomStateType = Optional[
+    Union[int, np.random.RandomState, np.random.Generator, np.integer]
+]
 ArrayLikeOfIndexes = Union[List[int], np.ndarray]
 MultilayerAdjacency = Union[List[AdjacencyMatrix], AdjacencyMatrix, np.ndarray]
 Scalar = Union[int, float, np.integer]

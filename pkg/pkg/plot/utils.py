@@ -232,3 +232,27 @@ def rainbowarrow(ax, start, end, cmap="viridis", n=50, lw=3):
     tri = mpl.path.Path(tricoords2, closed=True)
     ax.scatter(end[0], end[1], c=1, s=(2 * lw) ** 2, marker=tri, cmap=cmap, vmin=0)
     ax.autoscale_view()
+
+
+def _get_slice(items, n_items):
+    if items is None:
+        return slice(0, n_items)
+    elif type(items) == int:
+        return items
+    elif len(items) == 1:
+        return items[0]
+    else:
+        return slice(items[0], items[1])
+
+
+def merge_axes(fig, axs, rows=None, cols=None):
+    # TODO I could't figure out a safer way to do this without eval
+    # seems like gridspec.__getitem__ only wants numpy indices in the slicing form
+    # REF: https://matplotlib.org/stable/gallery/subplots_axes_and_figures/gridspec_and_subplots.html
+    row_slice = _get_slice(rows, axs.shape[0])
+    col_slice = _get_slice(cols, axs.shape[1])
+    gs = axs.flat[0].get_gridspec()
+    for ax in axs[row_slice, col_slice].ravel():
+        ax.remove()
+    ax = fig.add_subplot(gs[row_slice, col_slice])
+    return ax

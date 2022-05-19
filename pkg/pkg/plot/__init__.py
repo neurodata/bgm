@@ -8,6 +8,7 @@ from .utils import (
     get_text_width,
     get_texts_points,
     make_sequential_colormap,
+    merge_axes,
     multicolor_text,
     nice_text,
     rainbowarrow,

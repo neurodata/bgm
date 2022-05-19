@@ -1,5 +1,4 @@
 from .toy import get_toy_palette, sample_toy_networks
-from .utils import set_warnings
 from .wrangle import (
     create_node_data,
     ensure_connected,

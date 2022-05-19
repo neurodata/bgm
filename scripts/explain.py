@@ -14,7 +14,7 @@ from matplotlib.patheffects import Normal, Stroke
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.plot import multicolor_text, set_theme
+from pkg.plot import merge_axes, multicolor_text, set_theme
 
 FILENAME = "explain"
 
@@ -41,6 +41,7 @@ set_theme()
 
 #%%
 rng = np.random.default_rng(888888)
+np.random.seed(888)
 
 fig, axs = plt.subplots(
     2,
@@ -343,7 +344,6 @@ multicolor_text(
     fontsize="x-large",
 )
 
-from giskard.plot import merge_axes
 
 ax = merge_axes(fig, axs, rows=1, cols=(2, 4))
 ax.axis("off")
