@@ -13,9 +13,7 @@ from graspologic.simulations import er_corr
 from pkg.io import FIG_PATH, OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-
-# from pkg.match import BisectedGraphMatchSolver, GraphMatchSolver
-from giskard.match import GraphMatchSolver
+from pkg.match import GraphMatchSolver
 from pkg.plot import method_palette, set_theme
 from tqdm import tqdm
 
