@@ -1,1 +1,1 @@
-from .io import savefig, OUT_PATH, FIG_PATH, get_out_dir, glue
+from .io import FIG_PATH, OUT_PATH, get_out_dir, glue, savefig

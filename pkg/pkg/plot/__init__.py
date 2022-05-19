@@ -1,3 +1,5 @@
+from .palette import method_palette, subgraph_palette
+from .scatter import matched_stripplot
 from .theme import set_theme
 from .utils import (
     bound_texts,
@@ -12,4 +14,3 @@ from .utils import (
     remove_shared_ax,
     shrink_axis,
 )
-from .palette import method_palette, subgraph_palette
