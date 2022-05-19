@@ -10,12 +10,11 @@ import seaborn as sns
 from graspologic.plot import heatmap
 from graspologic.simulations import er_corr
 from matplotlib.patches import Rectangle
+from matplotlib.patheffects import Normal, Stroke
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.plot import set_theme
-from matplotlib.patheffects import Normal, Stroke
-from pkg.plot import multicolor_text
+from pkg.plot import multicolor_text, set_theme
 
 FILENAME = "explain"
 
@@ -281,13 +280,13 @@ multicolor_text(
     [
         r"Ipsilateral$\rightarrow$",
         r"$A_{LL}$",
-        ',',
+        ",",
         r"$A_{RR}$",
     ],
     colors=[
         "black",
         palette["LL"],
-        'black',
+        "black",
         palette["RR"],
     ],
     spaces=[True, False, True],
@@ -300,13 +299,13 @@ multicolor_text(
     [
         r"Contralateral$\rightarrow$",
         r"$A_{LR}$",
-        ',',
+        ",",
         r"$A_{RL}$",
     ],
     colors=[
         "black",
         palette["LR"],
-        'black',
+        "black",
         palette["RL"],
     ],
     spaces=[True, False, True],

@@ -11,6 +11,7 @@ from graspologic.plot import adjplot
 from pkg.data import DATA_PATH
 from pkg.utils import create_node_data, ensure_connected, select_lateral_nodes
 
+
 FILENAME = "process_c_elegans"
 
 DISPLAY_FIGS = True
