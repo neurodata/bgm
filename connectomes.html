@@ -325,16 +325,15 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">from</span> <span class="nn">giskard.match</span> <span class="kn">import</span> <span class="n">GraphMatchSolver</span>
-<span class="kn">from</span> <span class="nn">giskard.plot</span> <span class="kn">import</span> <span class="n">matched_stripplot</span>
 <span class="kn">from</span> <span class="nn">pkg.data</span> <span class="kn">import</span> <span class="n">load_split_connectome</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">OUT_PATH</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">glue</span> <span class="k">as</span> <span class="n">default_glue</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">savefig</span>
-<span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">method_palette</span><span class="p">,</span> <span class="n">set_theme</span>
+<span class="kn">from</span> <span class="nn">pkg.match</span> <span class="kn">import</span> <span class="n">GraphMatchSolver</span>
+<span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">matched_stripplot</span><span class="p">,</span> <span class="n">method_palette</span><span class="p">,</span> <span class="n">set_theme</span>
+<span class="kn">from</span> <span class="nn">pkg.utils</span> <span class="kn">import</span> <span class="n">get_hemisphere_indices</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">wilcoxon</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-
 
 <span class="n">FILENAME</span> <span class="o">=</span> <span class="s2">&quot;connectomes&quot;</span>
 
@@ -366,21 +365,7 @@ const thebe_selector_output = ".output, .cell_output"
 <h2>Load processed data, run matching experiment<a class="headerlink" href="#load-processed-data-run-matching-experiment" title="Permalink to this headline">¶</a></h2>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_hemisphere_indices</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
-    <span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;_inds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
-    <span class="n">left_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;hemisphere&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">]</span>
-    <span class="n">right_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="s2">&quot;hemisphere&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="p">(</span><span class="n">left_nodes</span><span class="p">[</span><span class="s2">&quot;pair&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="n">right_nodes</span><span class="p">[</span><span class="s2">&quot;pair&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-    <span class="n">left_indices</span> <span class="o">=</span> <span class="n">left_nodes</span><span class="p">[</span><span class="s2">&quot;_inds&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">right_indices</span> <span class="o">=</span> <span class="n">right_nodes</span><span class="p">[</span><span class="s2">&quot;_inds&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="k">return</span> <span class="n">left_indices</span><span class="p">,</span> <span class="n">right_indices</span>
-
-
-<span class="c1"># def compute_density</span>
-
-
-<span class="k">def</span> <span class="nf">compute_contralateral_ratio</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">AB</span><span class="p">,</span> <span class="n">BA</span><span class="p">,</span> <span class="n">agg</span><span class="o">=</span><span class="s2">&quot;nonzero&quot;</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_contralateral_ratio</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">AB</span><span class="p">,</span> <span class="n">BA</span><span class="p">,</span> <span class="n">agg</span><span class="o">=</span><span class="s2">&quot;nonzero&quot;</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">agg</span> <span class="o">==</span> <span class="s2">&quot;nonzero&quot;</span><span class="p">:</span>
         <span class="n">aggfunc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span>
     <span class="k">elif</span> <span class="n">agg</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
@@ -456,19 +441,19 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                 
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                              
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                           
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                           
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                           
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                           
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
 </pre></div>
 </div>
 </div>
@@ -650,7 +635,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>0</td>
       <td>GM</td>
       <td>200426005</td>
-      <td>6.395388</td>
+      <td>5.230662</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -662,7 +647,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>0</td>
       <td>BGM</td>
       <td>200426005</td>
-      <td>2.511831</td>
+      <td>1.644779</td>
       <td>True</td>
       <td>15</td>
       <td>0</td>
@@ -674,7 +659,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>1</td>
       <td>GM</td>
       <td>1087836691</td>
-      <td>5.118644</td>
+      <td>3.358726</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -686,7 +671,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>1</td>
       <td>BGM</td>
       <td>1087836691</td>
-      <td>4.520986</td>
+      <td>3.471028</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -698,7 +683,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>2</td>
       <td>GM</td>
       <td>2808301671</td>
-      <td>4.392902</td>
+      <td>3.518703</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -722,7 +707,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>47</td>
       <td>BGM</td>
       <td>3948372264</td>
-      <td>0.000640</td>
+      <td>0.000629</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -734,7 +719,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>48</td>
       <td>GM</td>
       <td>1655188775</td>
-      <td>0.000753</td>
+      <td>0.000841</td>
       <td>True</td>
       <td>4</td>
       <td>0</td>
@@ -746,7 +731,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>48</td>
       <td>BGM</td>
       <td>1655188775</td>
-      <td>0.000647</td>
+      <td>0.000607</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -758,7 +743,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>49</td>
       <td>GM</td>
       <td>2605143165</td>
-      <td>0.000919</td>
+      <td>0.000730</td>
       <td>True</td>
       <td>4</td>
       <td>0</td>
@@ -770,7 +755,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>49</td>
       <td>BGM</td>
       <td>2605143165</td>
-      <td>0.000655</td>
+      <td>0.000543</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -894,8 +879,8 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:08:16.868426
-Completed at 2022-05-16 17:05:42.241779
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:05:16.364003
+Completed at 2022-05-19 11:26:08.382174
 </pre></div>
 </div>
 </div>

@@ -296,12 +296,11 @@ const thebe_selector_output = ".output, .cell_output"
 <span class="kn">from</span> <span class="nn">graspologic.plot</span> <span class="kn">import</span> <span class="n">heatmap</span>
 <span class="kn">from</span> <span class="nn">graspologic.simulations</span> <span class="kn">import</span> <span class="n">er_corr</span>
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patheffects</span> <span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Stroke</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">OUT_PATH</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">glue</span> <span class="k">as</span> <span class="n">default_glue</span>
 <span class="kn">from</span> <span class="nn">pkg.io</span> <span class="kn">import</span> <span class="n">savefig</span>
-<span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">set_theme</span>
-<span class="kn">from</span> <span class="nn">matplotlib.patheffects</span> <span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Stroke</span>
-<span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">multicolor_text</span>
+<span class="kn">from</span> <span class="nn">pkg.plot</span> <span class="kn">import</span> <span class="n">merge_axes</span><span class="p">,</span> <span class="n">multicolor_text</span><span class="p">,</span> <span class="n">set_theme</span>
 
 <span class="n">FILENAME</span> <span class="o">=</span> <span class="s2">&quot;explain&quot;</span>
 
@@ -332,6 +331,7 @@ const thebe_selector_output = ".output, .cell_output"
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">888888</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">888</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
     <span class="mi">2</span><span class="p">,</span>
@@ -571,13 +571,13 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="p">[</span>
         <span class="sa">r</span><span class="s2">&quot;Ipsilateral$\rightarrow$&quot;</span><span class="p">,</span>
         <span class="sa">r</span><span class="s2">&quot;$A_</span><span class="si">{LL}</span><span class="s2">$&quot;</span><span class="p">,</span>
-        <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;,&quot;</span><span class="p">,</span>
         <span class="sa">r</span><span class="s2">&quot;$A_</span><span class="si">{RR}</span><span class="s2">$&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">colors</span><span class="o">=</span><span class="p">[</span>
         <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="n">palette</span><span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">],</span>
-        <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="n">palette</span><span class="p">[</span><span class="s2">&quot;RR&quot;</span><span class="p">],</span>
     <span class="p">],</span>
     <span class="n">spaces</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
@@ -590,13 +590,13 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="p">[</span>
         <span class="sa">r</span><span class="s2">&quot;Contralateral$\rightarrow$&quot;</span><span class="p">,</span>
         <span class="sa">r</span><span class="s2">&quot;$A_</span><span class="si">{LR}</span><span class="s2">$&quot;</span><span class="p">,</span>
-        <span class="s1">&#39;,&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;,&quot;</span><span class="p">,</span>
         <span class="sa">r</span><span class="s2">&quot;$A_</span><span class="si">{RL}</span><span class="s2">$&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">colors</span><span class="o">=</span><span class="p">[</span>
         <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="n">palette</span><span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">],</span>
-        <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="n">palette</span><span class="p">[</span><span class="s2">&quot;RL&quot;</span><span class="p">],</span>
     <span class="p">],</span>
     <span class="n">spaces</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
@@ -634,7 +634,6 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;x-large&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">giskard.plot</span> <span class="kn">import</span> <span class="n">merge_axes</span>
 
 <span class="n">ax</span> <span class="o">=</span> <span class="n">merge_axes</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
@@ -701,8 +700,8 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:07.793275
-Completed at 2022-05-16 16:56:35.555279
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:00:06.327310
+Completed at 2022-05-19 11:20:07.170147
 </pre></div>
 </div>
 </div>
