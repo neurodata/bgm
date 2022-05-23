@@ -53,6 +53,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <link rel="shortcut icon" href="_static/nd_logo_small.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -441,19 +443,19 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                              
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                      
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                      
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                      
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                      
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                                      
 </pre></div>
 </div>
 </div>
@@ -473,7 +475,7 @@ const thebe_selector_output = ".output, .cell_output"
     <span class="s2">&quot;herm_chem&quot;</span><span class="p">:</span> <span class="s2">&quot;C. elegans</span><span class="se">\n</span><span class="s2">hermaphrodite&quot;</span><span class="p">,</span>
     <span class="s2">&quot;male_chem&quot;</span><span class="p">:</span> <span class="s2">&quot;C. elegans</span><span class="se">\n</span><span class="s2">male&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maggot&quot;</span><span class="p">:</span> <span class="s2">&quot;Maggot&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;maggot_subset&quot;</span><span class="p">:</span> <span class="s2">&quot;D. melanogaster</span><span class="se">\n</span><span class="s2"> larva brain subset&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;maggot_subset&quot;</span><span class="p">:</span> <span class="s2">&quot;D. melanogaster</span><span class="se">\n</span><span class="s2"> larva subset&quot;</span><span class="p">,</span>
     <span class="s2">&quot;specimen_107&quot;</span><span class="p">:</span> <span class="s2">&quot;P. pacificus</span><span class="se">\n</span><span class="s2">pharynx 1&quot;</span><span class="p">,</span>
     <span class="s2">&quot;specimen_148&quot;</span><span class="p">:</span> <span class="s2">&quot;P. pacificus</span><span class="se">\n</span><span class="s2">pharynx 2&quot;</span><span class="p">,</span>
 <span class="p">}</span>
@@ -635,7 +637,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>0</td>
       <td>GM</td>
       <td>200426005</td>
-      <td>5.230662</td>
+      <td>6.397930</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -647,7 +649,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>0</td>
       <td>BGM</td>
       <td>200426005</td>
-      <td>1.644779</td>
+      <td>2.004004</td>
       <td>True</td>
       <td>15</td>
       <td>0</td>
@@ -659,7 +661,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>1</td>
       <td>GM</td>
       <td>1087836691</td>
-      <td>3.358726</td>
+      <td>4.263822</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -671,7 +673,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>1</td>
       <td>BGM</td>
       <td>1087836691</td>
-      <td>3.471028</td>
+      <td>3.557582</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -683,7 +685,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>2</td>
       <td>GM</td>
       <td>2808301671</td>
-      <td>3.518703</td>
+      <td>3.705772</td>
       <td>False</td>
       <td>30</td>
       <td>0</td>
@@ -707,7 +709,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>47</td>
       <td>BGM</td>
       <td>3948372264</td>
-      <td>0.000629</td>
+      <td>0.000656</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -719,7 +721,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>48</td>
       <td>GM</td>
       <td>1655188775</td>
-      <td>0.000841</td>
+      <td>0.000773</td>
       <td>True</td>
       <td>4</td>
       <td>0</td>
@@ -731,7 +733,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>48</td>
       <td>BGM</td>
       <td>1655188775</td>
-      <td>0.000607</td>
+      <td>0.000657</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -743,7 +745,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>49</td>
       <td>GM</td>
       <td>2605143165</td>
-      <td>0.000730</td>
+      <td>0.000769</td>
       <td>True</td>
       <td>4</td>
       <td>0</td>
@@ -755,7 +757,7 @@ const thebe_selector_output = ".output, .cell_output"
       <td>49</td>
       <td>BGM</td>
       <td>2605143165</td>
-      <td>0.000543</td>
+      <td>0.000672</td>
       <td>True</td>
       <td>3</td>
       <td>0</td>
@@ -879,8 +881,8 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:05:16.364003
-Completed at 2022-05-19 11:26:08.382174
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Script took 0:06:04.185500
+Completed at 2022-05-23 11:06:39.665421
 </pre></div>
 </div>
 </div>
