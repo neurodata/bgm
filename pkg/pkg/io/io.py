@@ -87,6 +87,13 @@ def glue(name, var, filename, figure=False, display=False, form=None):
         with open(RESULTS_PATH / "glued_variables.txt", "w") as f:
             f.write(text)
 
+        # CSV
+        text = "key;value\n"
+        for key, val in variables.items():
+            text += key + ";" + str(val) + "\n"
+        with open(RESULTS_PATH / "glued_variables.csv", "w") as f:
+            f.write(text)
+
     default_glue(savename, var, display=display)
 
     if form == "pvalue":

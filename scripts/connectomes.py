@@ -135,7 +135,7 @@ nice_dataset_map = {
     "herm_chem": "C. elegans\nhermaphrodite",
     "male_chem": "C. elegans\nmale",
     "maggot": "Maggot",
-    "maggot_subset": "D. melanogaster\n larva brain subset",
+    "maggot_subset": "D. melanogaster\n larva subset",
     "specimen_107": "P. pacificus\npharynx 1",
     "specimen_148": "P. pacificus\npharynx 2",
 }

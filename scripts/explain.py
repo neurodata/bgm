@@ -2,15 +2,19 @@
 # # Explain GM vs. BGM
 #%%
 import datetime
+import logging
 import time
 
 import matplotlib.pyplot as plt
+import navis
 import numpy as np
+import pymaid
 import seaborn as sns
 from graspologic.plot import heatmap
 from graspologic.simulations import er_corr
 from matplotlib.patches import Rectangle
 from matplotlib.patheffects import Normal, Stroke
+from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
@@ -39,9 +43,97 @@ def gluefig(name, fig, **kwargs):
 t0 = time.time()
 set_theme()
 
-#%%
-rng = np.random.default_rng(888888)
+rng = np.random.default_rng(8888)
 np.random.seed(888)
+
+#%%
+
+adj, nodes = load_split_connectome("maggot_subset")
+
+pymaid.CatmaidInstance("https://l1em.catmaid.virtualflybrain.org/", None)
+logging.getLogger("pymaid").setLevel(logging.WARNING)
+pymaid.clear_cache()
+
+#%%
+
+
+def rescale(ax, orient="x", scale=1.1):
+    if orient == "x":
+        lims = ax.get_xlim()
+    elif orient == "y":
+        lims = ax.get_ylim()
+
+    extent = lims[1] - lims[0]
+    boost = extent * (scale - 1) * 0.5
+    new_lims = (lims[0] - boost, lims[1] + boost)
+    if orient == "x":
+        lims = ax.set_xlim(new_lims)
+    elif orient == "y":
+        lims = ax.set_ylim(new_lims)
+
+
+colors = sns.color_palette("Set2")[:2]
+pairs = nodes.groupby("pair")
+n_pairs = len(pairs)
+show_pairs = rng.choice(n_pairs, size=10)
+fig, axs = plt.subplots(2, 5, figsize=(10, 4), gridspec_kw=dict(hspace=0, wspace=0))
+count = 0
+for i, (_, pair) in enumerate(pairs):
+    if i in show_pairs:
+        ids = pair.index.values
+        ids = [int(id) for id in ids]
+        nl = pymaid.get_neurons(ids)
+        ax = axs.flat[count]
+        navis.plot2d(nl, method="2d", colors=colors, ax=ax)
+
+        ax.axis("on")
+        ax.set(xticks=[], yticks=[])
+
+        ax.invert_xaxis()
+
+        ax.axis("equal")
+        rescale(ax, orient="x")
+        rescale(ax, orient="y")
+
+        ax.patch.set_alpha(1)
+
+        ax.spines[:].set_visible(True)
+        ax.spines[:].set_color("lightgrey")
+
+        count += 1
+
+ax = axs[0, 0]
+
+pad = 0.05
+ax.text(
+    0 + pad,
+    1 - pad,
+    "Left",
+    fontsize="medium",
+    color=colors[0],
+    transform=ax.transAxes,
+    ha="left",
+    va="top",
+)
+ax.text(
+    1 - pad,
+    1 - pad,
+    "Right",
+    fontsize="medium",
+    color=colors[1],
+    transform=ax.transAxes,
+    ha="right",
+    va="top",
+)
+
+fig.patch.set_alpha(1)
+fig.set_facecolor("w")
+
+
+gluefig("neuron_gallery", fig)
+
+#%%
+
 
 fig, axs = plt.subplots(
     2,
