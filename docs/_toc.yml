@@ -13,3 +13,7 @@ parts:
     - file: process_c_elegans
     - file: process_maggot
     - file: process_p_pacificus
+  - caption: Slides 
+    chapters: 
+    - url: https://docs.neurodata.io/bgm/talk.pdf
+      title: Talk
