@@ -1,0 +1,839 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes &#8212; Bisected Graph Matching</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../../_static/nd_logo_small.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../_static/nd_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Bisected Graph Matching</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../abstract.html">
+   Abstract
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Preliminaries
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../explain.html">
+   Explain GM vs. BGM
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Experiments
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations.html">
+   Simulation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../connectomes.html">
+   Connectome data
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Data wrangling
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../process_c_elegans.html">
+   <em>
+    C. elegans
+   </em>
+   connectomes
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../process_maggot.html">
+   Maggot connectome subset
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../process_p_pacificus.html">
+   <em>
+    P. pacificus
+   </em>
+   pharynx connectomes
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Slides
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference external" href="https://docs.neurodata.io/bgm/talk.pdf">
+   Talk
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../../_sources/slides/talk/talk.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/neurodata/bgm"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/neurodata/bgm/issues/new?title=Issue%20on%20page%20%2Fslides/talk/talk.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#benjamin-d-pedigo">
+     Benjamin D. Pedigo
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#team">
+       Team
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#larval-drosophila-aka-a-maggot-brain-connectome">
+   Larval
+   <em>
+    Drosophila
+   </em>
+   (AKA a maggot) brain connectome
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#neuron-pairs">
+   Neuron pairs
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#why-care-about-the-pairs">
+   Why care about the pairs?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#can-we-use-networks-to-predict-this-matching">
+   Can we use networks to predict this matching?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-what-is-it">
+   Graph matching - what is it?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-how-do-we-know-if-we-re-doing-good">
+   Graph matching - how do we know if we’re doing good?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-how-do-we-do-it">
+   Graph matching - how do we do it?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-does-it-do-on-the-maggot-brain">
+   How does it do on the maggot brain?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#thus-far-we-ve-not-used-the-contralateral-connections">
+   Thus far, we’ve not used the contralateral connections
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#these-are-about-1-3-of-the-edges-in-the-brain">
+     These are about 1/3 of the edges in the brain!
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#from-graph-matching-to-bisected-graph-matching">
+   From graph matching to bisected graph matching
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simulations">
+   Simulations
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#connectome-datasets">
+   Connectome datasets
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#more-info">
+   More info
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#benjamin-d-pedigo">
+     Benjamin D. Pedigo
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#team">
+       Team
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#larval-drosophila-aka-a-maggot-brain-connectome">
+   Larval
+   <em>
+    Drosophila
+   </em>
+   (AKA a maggot) brain connectome
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#neuron-pairs">
+   Neuron pairs
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#why-care-about-the-pairs">
+   Why care about the pairs?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#can-we-use-networks-to-predict-this-matching">
+   Can we use networks to predict this matching?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-what-is-it">
+   Graph matching - what is it?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-how-do-we-know-if-we-re-doing-good">
+   Graph matching - how do we know if we’re doing good?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#graph-matching-how-do-we-do-it">
+   Graph matching - how do we do it?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-does-it-do-on-the-maggot-brain">
+   How does it do on the maggot brain?
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#thus-far-we-ve-not-used-the-contralateral-connections">
+   Thus far, we’ve not used the contralateral connections
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#these-are-about-1-3-of-the-edges-in-the-brain">
+     These are about 1/3 of the edges in the brain!
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#from-graph-matching-to-bisected-graph-matching">
+   From graph matching to bisected graph matching
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simulations">
+   Simulations
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#connectome-datasets">
+   Connectome datasets
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#more-info">
+   More info
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
+                
+  <!-- _paginate: false -->
+<p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
+<style scoped> 
+/* h1 {
+    font-size:40px;
+} */
+p {
+    font-size: 24px;
+}
+</style>
+<!-- # Generative network modeling reveals a first quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
+<!-- ![icon](../../images/twitter.png) [_@bpedigod (Twitter)_](https://twitter.com/bpedigod) -->
+<!-- # Generative network modeling reveals a quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
+<div class="tex2jax_ignore mathjax_ignore section" id="bisected-graph-matching-improves-automated-pairing-of-bilaterally-homologous-neurons-from-connectomes">
+<h1>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes<a class="headerlink" href="#bisected-graph-matching-improves-automated-pairing-of-bilaterally-homologous-neurons-from-connectomes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="benjamin-d-pedigo">
+<h2>Benjamin D. Pedigo<a class="headerlink" href="#benjamin-d-pedigo" title="Permalink to this headline">¶</a></h2>
+<p><em>(he/him) - <img alt="icon" src="../../_images/email.png" /> <a class="reference external" href="mailto:bpedigo&#37;&#52;&#48;jhu&#46;edu"><em>bpedigo<span>&#64;</span>jhu<span>&#46;</span>edu</em></a>
+<a class="reference external" href="https://neurodata.io/">NeuroData lab</a></em>
+<em>Johns Hopkins University - Biomedical Engineering</em></p>
+<div class="section" id="team">
+<h3>Team<a class="headerlink" href="#team" title="Permalink to this headline">¶</a></h3>
+<!-- Start people panels -->
+<div class='minipanels'>
+<div>
+<p><img alt="person" src="../../_images/michael_winding.png" />
+Michael Winding</p>
+</div>
+<div>
+<p><img alt="person" src="../../_images/priebe_carey.jpg" />
+Carey Priebe</p>
+</div>
+<div>
+<p><img alt="person" src="../../_images/vogelstein_joshua.jpg" />
+Joshua Vogelstein</p>
+</div>
+<!-- End people panels -->
+</div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="larval-drosophila-aka-a-maggot-brain-connectome">
+<h1>Larval <em>Drosophila</em> (AKA a maggot) brain connectome<a class="headerlink" href="#larval-drosophila-aka-a-maggot-brain-connectome" title="Permalink to this headline">¶</a></h1>
+<div class="columns">
+<div>
+<!-- See [Michael Windings's talk](https://conference.neuromatch.io/abstract?edition=2021-4&submission_id=recVeh4RZFFRAQnIo) -->
+<ul class="simple">
+<li><p>Collaboration with Marta Zlatic/Albert Cardona’s groups - led by Michael Winding</p></li>
+<li><p>First whole-brain, single-cell connectome of any insect</p></li>
+<li><p>~3000 neurons, ~550K synapses</p></li>
+<li><p>Both hemispheres of the brain reconstructed</p></li>
+</ul>
+</div>
+<div>
+<p><img alt="" src="../../_images/Figure1-brain-render.png" /></p>
+</div>
+</div>
+<footer>
+Winding, Pedigo et al. “The complete connectome of an insect brain.” In prep. (2022)
+</footer>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="neuron-pairs">
+<h1>Neuron pairs<a class="headerlink" href="#neuron-pairs" title="Permalink to this headline">¶</a></h1>
+<div class="columns2-bl">
+<div>
+<p><img alt="center h:550" src="../../_images/match-neuron-morphology.png" /></p>
+</div>
+<div>
+<p><img alt="center h:350" src="../../_images/pair-rank-panel.png" /></p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="why-care-about-the-pairs">
+<h1>Why care about the pairs?<a class="headerlink" href="#why-care-about-the-pairs" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Understand stereotypy</p></li>
+<li><p>Proofreading</p></li>
+<li><p>Downstream analysis</p>
+<ul>
+<li><p>Omnibus embedding, for example</p></li>
+</ul>
+</li>
+<li><p>Useful to collapse complexity by ~2</p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="can-we-use-networks-to-predict-this-matching">
+<h1>Can we use networks to predict this matching?<a class="headerlink" href="#can-we-use-networks-to-predict-this-matching" title="Permalink to this headline">¶</a></h1>
+<p><img alt="center h:500" src="../../_images/the-wire.png" /></p>
+<!-- _footer: The Wire, Season 3, Episode 7 -->
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-what-is-it">
+<h1>Graph matching - what is it?<a class="headerlink" href="#graph-matching-what-is-it" title="Permalink to this headline">¶</a></h1>
+<p><img alt="center" src="../../_images/network-matching-explanation.svg" /></p>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-how-do-we-know-if-we-re-doing-good">
+<h1>Graph matching - how do we know if we’re doing good?<a class="headerlink" href="#graph-matching-how-do-we-know-if-we-re-doing-good" title="Permalink to this headline">¶</a></h1>
+<style scoped>
+h2 {
+    justify-content: center;
+    text-align: center;
+}
+</style>
+<div class="section" id="min-p-in-mathcal-p-a-p-b-p-t-f-2">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2" title="Permalink to this headline">¶</a></h2>
+<div class="columns2-bl">
+<div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathcal{P}\)</span> is the set of permutation matrices</p></li>
+<li><p>Measures the number of edge disagreements for unweighted</p></li>
+<li><p>Norm of edge disagreements for weighted</p></li>
+</ul>
+</div>
+<div>
+<p><img alt="h:300" src="../../_images/perm-matrix.png" /></p>
+</div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-how-do-we-do-it">
+<h1>Graph matching - how do we do it?<a class="headerlink" href="#graph-matching-how-do-we-do-it" title="Permalink to this headline">¶</a></h1>
+<style scoped>
+h2 {
+    justify-content: center;
+    text-align: center;
+}
+</style>
+<div class="section" id="id1">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Search space is not convex:</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(0.5 P_1 + 0.5 P_2 \notin \mathcal{P}\)</span></p></li>
+</ul>
+</li>
+<li><p>Relax to the “birkoff polytope:” doubly stochastic matrices</p>
+<ul>
+<li><p>Rows and columns all sum to 1, but not all elements have to be 1</p></li>
+<li><p>Similar to <em>transport</em> as opposed to <em>assignment</em> problems: we are still mapping nodes between networks, but this is a <em>soft</em> mapping</p></li>
+</ul>
+</li>
+<li><p>Apply Frank-Wolfe method</p>
+<ul>
+<li><p>Minimize a first-order Taylor series of the objective function over a convex set</p></li>
+<li><p>Requires a gradient <span class="math notranslate nohighlight">\(\nabla f(P)\)</span></p></li>
+</ul>
+</li>
+</ul>
+<!-- _footer: Vogelstein et al. 2015 - Fast approximate quadratic (FAQ) algorithm -->
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="how-does-it-do-on-the-maggot-brain">
+<h1>How does it do on the maggot brain?<a class="headerlink" href="#how-does-it-do-on-the-maggot-brain" title="Permalink to this headline">¶</a></h1>
+<div class="columns2-bl">
+<div>
+<p><img alt="center h:400" src="_build/html/_images/left-pair-predictions.svg" /></p>
+</div>
+<div>
+<ul class="simple">
+<li><p>~76-80% correct on the full brain connectome for left-right pair prediction</p></li>
+<li><p>Lots of bells and whistles one can add:</p>
+<ul>
+<li><p>Edge types</p></li>
+<li><p>Seeds</p></li>
+<li><p>Morphology</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<hr class="docutils" />
+<style scoped>
+h1, h2 {
+    padding-top: 140px;
+    justify-content: center;
+    text-align: center;
+}
+</style>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="thus-far-we-ve-not-used-the-contralateral-connections">
+<h1>Thus far, we’ve not used the contralateral connections<a class="headerlink" href="#thus-far-we-ve-not-used-the-contralateral-connections" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="these-are-about-1-3-of-the-edges-in-the-brain">
+<h2>These are about 1/3 of the edges in the brain!<a class="headerlink" href="#these-are-about-1-3-of-the-edges-in-the-brain" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="from-graph-matching-to-bisected-graph-matching">
+<h1>From graph matching to bisected graph matching<a class="headerlink" href="#from-graph-matching-to-bisected-graph-matching" title="Permalink to this headline">¶</a></h1>
+<p><img alt="" src="../../_images/explain.svg" /></p>
+<!-- --LL: #66c2a5;
+    --RR: #fc8d62;
+    --source: #8da0cb;
+    --target: #e78ac3;
+    --LR: #8da0cb;
+    --RL: #e78ac3; -->
+<p>New gradient:</p>
+<div class="math notranslate nohighlight">
+\[\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + \textcolor{#66c2a5}{A_{LL}}^TP\textcolor{#fc8d62}{A_{RR}} + \textcolor{#8da0cb}{A_{LR}} P^T \textcolor{#e78ac3}{A_{RL}}^T + \textcolor{#e78ac3}{A_{RL}}^T P^T \textcolor{#8da0cb}{A_{LR}}\]</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="simulations">
+<h1>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">¶</a></h1>
+<div class="columns">
+<div>
+<ul class="simple">
+<li><p>Created simulated networks with two “sides”</p>
+<ul>
+<li><p>Ipsilateral subgraphs had edge correlation of 0.8</p></li>
+<li><p>Contralateral subgraphs had varying correlation (x-axis at right)</p></li>
+</ul>
+</li>
+<li><p>Measured matching accuracy for graph matching (GM) and bisected graph matching (BGM)</p></li>
+</ul>
+</div>
+<div>
+<p><img alt="" src="../../_images/match_ratio_by_contra_rho.svg" /></p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="connectome-datasets">
+<h1>Connectome datasets<a class="headerlink" href="#connectome-datasets" title="Permalink to this headline">¶</a></h1>
+<p><img alt="center h:550" src="../../_images/match_accuracy_comparison.svg" /></p>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="summary">
+<h1>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h1>
+<p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
+<ul class="simple">
+<li><p>Modified the graph matching problem to allow us to incorporate information from contralateral connections in the brain</p></li>
+<li><p>Proposed an algorithm to solve the problem, which amounts to a simple modification of previous graph matching tools (FAQ)</p></li>
+<li><p>Showed in simulation that with sufficient correlation in contralateral edges, this
+can help with matching</p></li>
+<li><p>Demonstrated that this indeed improves matching in five different bilateral connectome
+datasets</p></li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="tex2jax_ignore mathjax_ignore section" id="more-info">
+<h1>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h1>
+<p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
+<div class="columns">
+<div>
+<ul class="simple">
+<li><p>Tutorial on graph matching <a class="reference external" href="https://bdpedigo.github.io/networks-course/graph_matching.html">https://bdpedigo.github.io/networks-course/graph_matching.html</a></p></li>
+<li><p>Code in graspologic <a class="reference external" href="https://microsoft.github.io/graspologic/latest/reference/reference/match.html">https://microsoft.github.io/graspologic/latest/reference/reference/match.html</a></p></li>
+<li><p>Code in SciPy <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html</a></p></li>
+</ul>
+<p>Big thanks to Ali Saad-Eldin for writing most of the code!</p>
+</div>
+<div>
+<ul class="simple">
+<li><p>This repo: <a class="reference external" href="https://github.com/neurodata/bgm">https://github.com/neurodata/bgm</a></p></li>
+<li><p>This Jupyter Book: <a class="reference external" href="http://docs.neurodata.io/bgm/abstract.html">http://docs.neurodata.io/bgm/abstract.html</a></p></li>
+<li><p>This manuscript: <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2022.05.19.492713">https://www.biorxiv.org/content/10.1101/2022.05.19.492713</a></p></li>
+</ul>
+</div>
+</div>
+<!-- _footer:  --></div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./slides/talk"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By Benjamin D. Pedigo<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>
