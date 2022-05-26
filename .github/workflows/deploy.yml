@@ -22,14 +22,28 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+
+    # Caching
+    - name: Try to uncache environment
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
+
+    # Installing
     - name: Install dependencies
       run: |
-        pip install -r ./docs/requirements.txt
-
+        pip install -r ./docs/requirements.txt --upgrade --upgrade-strategy eager
+      
     # Build the book
     - name: Build the book
       run: |
         jupyter-book build docs
+
+    # Move pdfs
+    - name: Moving slides to static HTML
+      run: |
+        cat ./docs/slides/manifest.txt | xargs -I % cp -r ./docs/slides/%/%.pdf ./docs/_build/html/
 
     # Deploy the book's HTML to gh-pages branch
     - name: GitHub Pages action
