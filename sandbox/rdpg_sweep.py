@@ -2,21 +2,18 @@
 import datetime
 import time
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from graspologic.embed import AdjacencySpectralEmbed
 from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import GraphMatchSolver
-from pkg.plot import matched_stripplot, method_palette, set_theme
+from pkg.plot import set_theme
 from pkg.utils import get_hemisphere_indices
-from scipy.stats import wilcoxon
-from sklearn.covariance import log_likelihood
-from tqdm import tqdm
+
 
 FILENAME = "rdpg_sweep"
 
@@ -41,9 +38,6 @@ def gluefig(name, fig, **kwargs):
 t0 = time.time()
 rng = np.random.default_rng(8888)
 #%%
-
-from graspologic.embed import AdjacencySpectralEmbed
-from graspologic.utils import binarize
 
 dataset = "maggot_subset"
 adj, nodes = load_split_connectome(dataset, weights=False)
@@ -79,7 +73,7 @@ def compute_log_likelihood(adj, P):
     return log_likelihood
 
 
-pad = 1 / (len(left_adj)**3)
+pad = 1 / (len(left_adj) ** 3)
 
 rows = []
 for rank in np.arange(1, max_rank):
