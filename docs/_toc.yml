@@ -14,6 +14,8 @@ parts:
     - file: process_maggot
     - file: process_p_pacificus
   - caption: Slides 
-    chapters: 
+    chapters:
+    - url: https://docs.neurodata.io/bgm/cambridge.pdf
+      title: Cambridge
     - url: https://docs.neurodata.io/bgm/talk.pdf
       title: Talk
