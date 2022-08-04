@@ -465,17 +465,29 @@ title="Print to PDF"
       \(\min_{P \in \mathcal{P}} \underbrace{\|A - \overbrace{PBP^T}^{\text{reordered } B}\|_F^2}_{\text{distance between adj. mats.}}\)
      </span>
     </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#where-mathcal-p-is-the-set-of-permutation-matrices">
-       where
-       <span class="math notranslate nohighlight">
-        \(\mathcal{P}\)
-       </span>
-       is the set of permutation matrices
-      </a>
-     </li>
-    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#where-mathcal-p-is-the-set-of-permutation-matrices">
+     where
+     <span class="math notranslate nohighlight">
+      \(\mathcal{P}\)
+     </span>
+     is the set of permutation matrices
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#why-is-it-hard">
+   Why is it hard
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
    </li>
   </ul>
  </li>
@@ -485,7 +497,7 @@ title="Print to PDF"
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+    <a class="reference internal nav-link" href="#id2">
      <span class="math notranslate nohighlight">
       \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
      </span>
@@ -559,7 +571,7 @@ title="Print to PDF"
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id2">
+      <a class="reference internal nav-link" href="#id3">
        <code class="docutils literal notranslate">
         <span class="pre">
          graspologic
@@ -584,7 +596,7 @@ title="Print to PDF"
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id3">
+      <a class="reference internal nav-link" href="#id4">
        <code class="docutils literal notranslate">
         <span class="pre">
          graspologic
@@ -655,12 +667,17 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#practical-considerations">
+   Practical considerations
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#putting-it-all-together-in-the-new-code">
    Putting it all together in the (new) code
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id4">
+    <a class="reference internal nav-link" href="#id5">
      <code class="docutils literal notranslate">
       <span class="pre">
        graspologic
@@ -672,11 +689,6 @@ title="Print to PDF"
   </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#practical-considerations">
-   Practical considerations
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#r-code">
    R code
   </a>
@@ -685,6 +697,35 @@ title="Print to PDF"
   <a class="reference internal nav-link" href="#more-info">
    More info
   </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#references-further-reading">
+     References / further reading
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ackowledgements">
+     Ackowledgements
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#questions">
+   Questions?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#slides-https-tinyurl-com-cambridge-matching">
+     Slides: https://tinyurl.com/cambridge-matching
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     Benjamin D. Pedigo
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -802,17 +843,29 @@ title="Print to PDF"
       \(\min_{P \in \mathcal{P}} \underbrace{\|A - \overbrace{PBP^T}^{\text{reordered } B}\|_F^2}_{\text{distance between adj. mats.}}\)
      </span>
     </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#where-mathcal-p-is-the-set-of-permutation-matrices">
-       where
-       <span class="math notranslate nohighlight">
-        \(\mathcal{P}\)
-       </span>
-       is the set of permutation matrices
-      </a>
-     </li>
-    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#where-mathcal-p-is-the-set-of-permutation-matrices">
+     where
+     <span class="math notranslate nohighlight">
+      \(\mathcal{P}\)
+     </span>
+     is the set of permutation matrices
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#why-is-it-hard">
+   Why is it hard
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+     <span class="math notranslate nohighlight">
+      \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
+     </span>
+    </a>
    </li>
   </ul>
  </li>
@@ -822,7 +875,7 @@ title="Print to PDF"
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2">
+    <a class="reference internal nav-link" href="#id2">
      <span class="math notranslate nohighlight">
       \(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)
      </span>
@@ -896,7 +949,7 @@ title="Print to PDF"
       </a>
      </li>
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id2">
+      <a class="reference internal nav-link" href="#id3">
        <code class="docutils literal notranslate">
         <span class="pre">
          graspologic
@@ -921,7 +974,7 @@ title="Print to PDF"
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id3">
+      <a class="reference internal nav-link" href="#id4">
        <code class="docutils literal notranslate">
         <span class="pre">
          graspologic
@@ -992,12 +1045,17 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#practical-considerations">
+   Practical considerations
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#putting-it-all-together-in-the-new-code">
    Putting it all together in the (new) code
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id4">
+    <a class="reference internal nav-link" href="#id5">
      <code class="docutils literal notranslate">
       <span class="pre">
        graspologic
@@ -1009,11 +1067,6 @@ title="Print to PDF"
   </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#practical-considerations">
-   Practical considerations
-  </a>
- </li>
- <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#r-code">
    R code
   </a>
@@ -1022,6 +1075,35 @@ title="Print to PDF"
   <a class="reference internal nav-link" href="#more-info">
    More info
   </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#references-further-reading">
+     References / further reading
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ackowledgements">
+     Ackowledgements
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#questions">
+   Questions?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#slides-https-tinyurl-com-cambridge-matching">
+     Slides: https://tinyurl.com/cambridge-matching
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     Benjamin D. Pedigo
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -1033,7 +1115,15 @@ title="Print to PDF"
                 
               <div>
                 
-  <!-- _paginate: false -->
+  <style>
+h5 {
+    justify-content: center;
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+</style>
+<!-- _paginate: false -->
 <p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
 <!-- # Generative network modeling reveals a first quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
 <!-- ![icon](../../images/twitter.png) [_@bpedigod (Twitter)_](https://twitter.com/bpedigod) -->
@@ -1148,6 +1238,7 @@ So for an adjacency matrix, we always want <span class="math notranslate nohighl
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="a-permutation-of-one-network-with-respect-to-another-is-an-alignment-matching-pairing">
 <h1>A permutation of one network with respect to another is an {alignment, matching, pairing}<a class="headerlink" href="#a-permutation-of-one-network-with-respect-to-another-is-an-alignment-matching-pairing" title="Permalink to this headline">#</a></h1>
+<p>So we are searching for a permutation of <span class="math notranslate nohighlight">\(B\)</span> with respect to some fixed ordering of <span class="math notranslate nohighlight">\(A\)</span></p>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="what-is-graph-matching">
@@ -1158,19 +1249,40 @@ So for an adjacency matrix, we always want <span class="math notranslate nohighl
 <section class="tex2jax_ignore mathjax_ignore" id="framing-the-graph-matching-problem-mathematically">
 <h1>Framing the graph matching problem mathematically<a class="headerlink" href="#framing-the-graph-matching-problem-mathematically" title="Permalink to this headline">#</a></h1>
 <style scoped>
-h2,h5 {
+h4 {
     justify-content: center;
     text-align: center;
 }
 </style>
 <section id="min-p-in-mathcal-p-underbrace-a-overbrace-pbp-t-text-reordered-b-f-2-text-distance-between-adj-mats">
 <h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \underbrace{\|A - \overbrace{PBP^T}^{\text{reordered } B}\|_F^2}_{\text{distance between adj. mats.}}\)</span><a class="headerlink" href="#min-p-in-mathcal-p-underbrace-a-overbrace-pbp-t-text-reordered-b-f-2-text-distance-between-adj-mats" title="Permalink to this headline">#</a></h2>
+</section>
 <section id="where-mathcal-p-is-the-set-of-permutation-matrices">
-<h3>where <span class="math notranslate nohighlight">\(\mathcal{P}\)</span> is the set of permutation matrices<a class="headerlink" href="#where-mathcal-p-is-the-set-of-permutation-matrices" title="Permalink to this headline">#</a></h3>
+<h2>where <span class="math notranslate nohighlight">\(\mathcal{P}\)</span> is the set of permutation matrices<a class="headerlink" href="#where-mathcal-p-is-the-set-of-permutation-matrices" title="Permalink to this headline">#</a></h2>
 <br>
 <ul class="simple">
 <li><p>Measures the number of edge disagreements for unweighted networks,</p></li>
 <li><p>Norm of edge disagreements for weighted networks</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="why-is-it-hard">
+<h1>Why is it hard<a class="headerlink" href="#why-is-it-hard" title="Permalink to this headline">#</a></h1>
+<section id="min-p-in-mathcal-p-a-p-b-p-t-f-2">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Search space is absurdly large</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(|\mathcal{P}| = n!\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(n = 335 \rightarrow |\mathcal{P}| \approx 10^{82}\)</span> (more than number of atoms in universe)</p></li>
+</ul>
+</li>
+<li><p>Search space is not convex</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(0.5 P_1 + 0.5 P_2 \notin \mathcal{P}\)</span></p></li>
+</ul>
+</li>
 </ul>
 <!-- ---
 
@@ -1190,7 +1302,6 @@ h2,h5 {
 </div> -->
 </section>
 </section>
-</section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="graph-matching-how-do-we-do-it">
 <h1>Graph matching - how do we do it?<a class="headerlink" href="#graph-matching-how-do-we-do-it" title="Permalink to this headline">#</a></h1>
@@ -1200,14 +1311,9 @@ h2 {
     text-align: center;
 }
 </style>
-<section id="min-p-in-mathcal-p-a-p-b-p-t-f-2">
-<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2" title="Permalink to this headline">#</a></h2>
+<section id="id2">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
-<li><p>Search space is not convex:</p>
-<ul>
-<li><p><span class="math notranslate nohighlight">\(0.5 P_1 + 0.5 P_2 \notin \mathcal{P}\)</span></p></li>
-</ul>
-</li>
 <li><p>Relax to the “birkoff polytope:” doubly stochastic matrices</p>
 <ul>
 <li><p>Rows and columns all sum to 1, but not all elements have to be 1</p></li>
@@ -1220,6 +1326,7 @@ h2 {
 <li><p>Requires a gradient <span class="math notranslate nohighlight">\(\nabla f(P)\)</span></p></li>
 </ul>
 </li>
+<li><p>Project back to set of permutations when done</p></li>
 </ul>
 <!-- _footer: Vogelstein et al. 2015 - Fast approximate quadratic (FAQ) algorithm -->
 </section>
@@ -1309,8 +1416,8 @@ p {
 <section id="where-mathcal-p-s-is-the-set-of-permutations-which-respect-your-known-partial-pairing">
 <h3>where <span class="math notranslate nohighlight">\(\mathcal{P_{s}}\)</span> is the set of permutations which respect your known, partial pairing<a class="headerlink" href="#where-mathcal-p-s-is-the-set-of-permutations-which-respect-your-known-partial-pairing" title="Permalink to this headline">#</a></h3>
 </section>
-<section id="id2">
-<h3><code class="docutils literal notranslate"><span class="pre">graspologic</span></code><a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h3>
+<section id="id3">
+<h3><code class="docutils literal notranslate"><span class="pre">graspologic</span></code><a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graspologic.match</span> <span class="kn">import</span> <span class="n">GraphMatch</span>
 
 <span class="n">gm</span> <span class="o">=</span> <span class="n">GraphMatch</span><span class="p">()</span>
@@ -1327,8 +1434,8 @@ p {
 <p>If <span class="math notranslate nohighlight">\(S\)</span> is a matrix representing the similarity of each object in <span class="math notranslate nohighlight">\(A\)</span> (rows) to each object in <span class="math notranslate nohighlight">\(B\)</span> (columns)…</p>
 <section id="min-p-in-mathcal-p-a-p-b-p-t-f-2-trace-sp-t">
 <h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2 + trace(SP^T)\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2-trace-sp-t" title="Permalink to this headline">#</a></h2>
-<section id="id3">
-<h3><code class="docutils literal notranslate"><span class="pre">graspologic</span></code><a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h3>
+<section id="id4">
+<h3><code class="docutils literal notranslate"><span class="pre">graspologic</span></code><a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graspologic.match</span> <span class="kn">import</span> <span class="n">GraphMatch</span>
 
 <span class="n">gm</span> <span class="o">=</span> <span class="n">GraphMatch</span><span class="p">()</span>
@@ -1382,6 +1489,7 @@ h1, h2 {
 <p>New gradient:</p>
 <div class="math notranslate nohighlight">
 \[\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + \textcolor{#66c2a5}{A_{LL}}^TP\textcolor{#fc8d62}{A_{RR}} + \textcolor{#8da0cb}{A_{LR}} P^T \textcolor{#e78ac3}{A_{RL}}^T + \textcolor{#e78ac3}{A_{RL}}^T P^T \textcolor{#8da0cb}{A_{LR}}\]</div>
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="simulations">
@@ -1402,11 +1510,13 @@ h1, h2 {
 <p><img alt="" src="../../_images/match_ratio_by_contra_rho.svg" /></p>
 </div>
 </div>
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="connectome-datasets">
 <h1>Connectome datasets<a class="headerlink" href="#connectome-datasets" title="Permalink to this headline">#</a></h1>
 <p><img alt="center h:550" src="../../_images/match_accuracy_comparison.svg" /></p>
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
 <!-- ---
 # Summary 
 
@@ -1433,31 +1543,10 @@ h1, h2 {
 </ul>
 </section>
 <hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="putting-it-all-together-in-the-new-code">
-<h1>Putting it all together in the (new) code<a class="headerlink" href="#putting-it-all-together-in-the-new-code" title="Permalink to this headline">#</a></h1>
-<section id="id4">
-<h2><code class="docutils literal notranslate"><span class="pre">graspologic</span></code> (in development)<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graspologic.match</span> <span class="kn">import</span> <span class="n">graph_match</span> 
-
-<span class="n">indices_A</span><span class="p">,</span> <span class="n">indices_B</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">misc</span> <span class="o">=</span> <span class="n">graph_match</span><span class="p">(</span><span class="n">A_ll</span><span class="p">,</span> <span class="c1"># left-to-left</span>
-                                                <span class="n">A_rr</span><span class="p">,</span> <span class="c1"># right-to-right</span>
-                                                <span class="n">AB</span><span class="o">=</span><span class="n">A_lr</span><span class="p">,</span> <span class="c1"># left-to-right</span>
-                                                <span class="n">BA</span><span class="o">=</span><span class="n">A_rl</span><span class="p">,</span> <span class="c1"># right-to-left</span>
-                                                <span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="c1"># similarity (e.g. morphology)</span>
-                                                <span class="n">partial_match</span><span class="o">=</span><span class="n">seeds</span> <span class="c1"># known alignemnt)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">indices_A</span></code> is a selection of the nodes of <code class="docutils literal notranslate"><span class="pre">A</span></code>
-<code class="docutils literal notranslate"><span class="pre">indices_B</span></code> is a (at least partial) permutation of <code class="docutils literal notranslate"><span class="pre">B</span></code>
-<code class="docutils literal notranslate"><span class="pre">score</span></code> is the final graph matching objective function
-<code class="docutils literal notranslate"><span class="pre">misc</span></code> is a dictionary with extra details about the optimization path</p>
-</section>
-</section>
-<hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="practical-considerations">
 <h1>Practical considerations<a class="headerlink" href="#practical-considerations" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
-<li><p>Networks not of the same size (see <code class="docutils literal notranslate"><span class="pre">padding</span></code>)</p></li>
+<li><p>Networks not same size (see <code class="docutils literal notranslate"><span class="pre">padding</span></code>)</p></li>
 <li><p>Stopping tolerance for the algorithm</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_iter</span></code> controls the maximum number of iterations (default is 30). If results are poor and computation is not taking too long, can try increasing</p></li>
@@ -1479,6 +1568,27 @@ h1, h2 {
 </ul>
 </section>
 <hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="putting-it-all-together-in-the-new-code">
+<h1>Putting it all together in the (new) code<a class="headerlink" href="#putting-it-all-together-in-the-new-code" title="Permalink to this headline">#</a></h1>
+<section id="id5">
+<h2><code class="docutils literal notranslate"><span class="pre">graspologic</span></code> (in development)<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graspologic.match</span> <span class="kn">import</span> <span class="n">graph_match</span> 
+
+<span class="n">indices_A</span><span class="p">,</span> <span class="n">indices_B</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">misc</span> <span class="o">=</span> <span class="n">graph_match</span><span class="p">(</span><span class="n">A_ll</span><span class="p">,</span> <span class="c1"># left-to-left</span>
+                                                <span class="n">A_rr</span><span class="p">,</span> <span class="c1"># right-to-right</span>
+                                                <span class="n">AB</span><span class="o">=</span><span class="n">A_lr</span><span class="p">,</span> <span class="c1"># left-to-right</span>
+                                                <span class="n">BA</span><span class="o">=</span><span class="n">A_rl</span><span class="p">,</span> <span class="c1"># right-to-left</span>
+                                                <span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="c1"># similarity (e.g. morphology)</span>
+                                                <span class="n">partial_match</span><span class="o">=</span><span class="n">seeds</span> <span class="c1"># known alignemnt)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">indices_A</span></code> is a selection of the nodes of <code class="docutils literal notranslate"><span class="pre">A</span></code>
+<code class="docutils literal notranslate"><span class="pre">indices_B</span></code> is a (at least partial) permutation of <code class="docutils literal notranslate"><span class="pre">B</span></code>
+<code class="docutils literal notranslate"><span class="pre">score</span></code> is the final graph matching objective function
+<code class="docutils literal notranslate"><span class="pre">misc</span></code> is a dictionary with extra details about the optimization path</p>
+</section>
+</section>
+<hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="r-code">
 <h1>R code<a class="headerlink" href="#r-code" title="Permalink to this headline">#</a></h1>
 <p><a class="reference external" href="https://github.com/dpmcsuss/iGraphMatch/">https://github.com/dpmcsuss/iGraphMatch/</a></p>
@@ -1490,21 +1600,66 @@ h1, h2 {
 <div class="columns">
 <div>
 <ul class="simple">
-<li><p>Tutorial on graph matching <a class="reference external" href="https://bdpedigo.github.io/networks-course/graph_matching.html">https://bdpedigo.github.io/networks-course/graph_matching.html</a></p></li>
-<li><p>Code in graspologic <a class="reference external" href="https://microsoft.github.io/graspologic/latest/reference/reference/match.html">https://microsoft.github.io/graspologic/latest/reference/reference/match.html</a></p></li>
-<li><p>Code in SciPy <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html</a></p></li>
+<li><p>Tutorial on graph matching <a class="reference external" href="https://bdpedigo.github.io/networks-course/graph_matching.html">bdpedigo.github.io/networks-course/graph_matching.html</a></p></li>
+<li><p>Code in graspologic <a class="reference external" href="https://microsoft.github.io/graspologic/latest/reference/reference/match.html">microsoft.github.io/graspologic/latest/reference/reference/match.html</a></p></li>
+<li><p>Code in SciPy <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html">docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html</a></p></li>
 </ul>
-<p>Big thanks to Ali Saad-Eldin for writing most of the code!</p>
 </div>
 <div>
 <ul class="simple">
-<li><p>This repo: <a class="reference external" href="https://github.com/neurodata/bgm">https://github.com/neurodata/bgm</a></p></li>
-<li><p>Jupyter Book on BGM: <a class="reference external" href="http://docs.neurodata.io/bgm/abstract.html">http://docs.neurodata.io/bgm/abstract.html</a></p></li>
-<li><p>Manuscript on BGM: <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2022.05.19.492713">https://www.biorxiv.org/content/10.1101/2022.05.19.492713</a></p></li>
+<li><p>This repo: <a class="reference external" href="https://github.com/neurodata/bgm">github.com/neurodata/bgm</a></p></li>
+<li><p>Jupyter Book on BGM: <a class="reference external" href="http://docs.neurodata.io/bgm/abstract.html">docs.neurodata.io/bgm/abstract.html</a></p></li>
+<li><p>Manuscript on BGM: <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2022.05.19.492713">biorxiv.org/content/10.1101/2022.05.19.492713</a></p></li>
+<li><p>New code [WIP]: <a class="reference external" href="https://github.com/microsoft/graspologic/pull/960">github.com/microsoft/graspologic/pull/960</a></p></li>
 </ul>
 </div>
 </div>
-<!-- _footer:  --></section>
+<hr class="docutils" />
+<style scoped>
+ul {
+    font-size: 21px;
+}
+</style>
+<section id="references-further-reading">
+<h2>References / further reading<a class="headerlink" href="#references-further-reading" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Burkard, R. et al. (2012). Assignment Problems. Society for Industrial and Applied Mathematics. <a class="reference external" href="https://doi.org/10.1137/1.9781611972238">https://doi.org/10.1137/1.9781611972238</a></p></li>
+<li><p>Vogelstein, J. T. et al. (2015). Fast Approximate Quadratic programming for graph matching. PLoS ONE, 10(4), 1–17. <a class="reference external" href="https://doi.org/10.1371/journal.pone.0121002">https://doi.org/10.1371/journal.pone.0121002</a></p></li>
+<li><p>Fishkind, D. E. et al. (2019). Seeded graph matching. Pattern Recognition, 87, 203–215. <a class="reference external" href="https://doi.org/10.1016/j.patcog.2018.09.014">https://doi.org/10.1016/j.patcog.2018.09.014</a></p></li>
+<li><p>Pantazis, K. et al. (2022). Multiplex graph matching matched filters. Applied Network Science, 7(1), 1–35. <a class="reference external" href="https://doi.org/10.1007/s41109-022-00464-0">https://doi.org/10.1007/s41109-022-00464-0</a></p></li>
+<li><p>Saad-Eldin, A. et al. (2021). Graph Matching via Optimal Transport. <a class="reference external" href="http://arxiv.org/abs/2111.05366">http://arxiv.org/abs/2111.05366</a></p></li>
+<li><p>Pedigo, B. D. et al. (2022). Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes (p. 2022.05.19.492713). bioRxiv. <a class="reference external" href="https://doi.org/10.1101/2022.05.19.492713">https://doi.org/10.1101/2022.05.19.492713</a></p></li>
+</ul>
+</section>
+<section id="ackowledgements">
+<h2>Ackowledgements<a class="headerlink" href="#ackowledgements" title="Permalink to this headline">#</a></h2>
+<p>Big thanks to graspologic contributors (especially Ali Saad-Eldin) for work on the code!</p>
+<hr class="docutils" />
+<p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="questions">
+<h1>Questions?<a class="headerlink" href="#questions" title="Permalink to this headline">#</a></h1>
+<section id="slides-https-tinyurl-com-cambridge-matching">
+<h2>Slides: <a class="reference external" href="https://tinyurl.com/cambridge-matching">https://tinyurl.com/cambridge-matching</a><a class="headerlink" href="#slides-https-tinyurl-com-cambridge-matching" title="Permalink to this headline">#</a></h2>
+<p><span> </span>
+<span> </span>
+<span> </span></p>
+<style scoped>
+section {
+    justify-content: center;
+    text-align: center;
+}
+</style>
+</section>
+<section id="id6">
+<h2>Benjamin D. Pedigo<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h2>
+<p><img alt="icon" src="../../_images/email.png" /> <a class="reference external" href="mailto:bpedigo&#37;&#52;&#48;jhu&#46;edu">bpedigo<span>&#64;</span>jhu<span>&#46;</span>edu</a>
+<img alt="icon" src="../../_images/github.png" /> <a class="reference external" href="https://github.com/bdpedigo">&#64;bdpedigo (Github)</a>
+<img alt="icon" src="../../_images/twitter.png" /> <a class="reference external" href="https://twitter.com/bpedigod">&#64;bpedigod (Twitter)</a>
+<img alt="icon" src="../../_images/web.png" /> <a class="reference external" href="https://bdpedigo.github.io/">bdpedigo.github.io</a></p>
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
