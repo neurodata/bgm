@@ -4,11 +4,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes &#8212; Bisected Graph Matching</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Graph matching for connectomics &#8212; Bisected Graph Matching</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet">
-  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -18,21 +20,17 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -40,13 +38,14 @@
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../../_static/togglebutton.js"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
@@ -67,7 +66,21 @@ const thebe_selector_output = ".output, .cell_output"
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
     
     <div class="container-fluid" id="banner"></div>
 
@@ -76,9 +89,10 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="container-xl">
       <div class="row">
           
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../../index.html">
       
         <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
@@ -96,14 +110,15 @@ const thebe_selector_output = ".output, .cell_output"
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../../abstract.html">
-   Abstract
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../abstract.html">
+                    Abstract
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Preliminaries
  </span>
@@ -174,93 +189,183 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
             
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../../_sources/slides/talk/talk.md"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/neurodata/bgm"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/neurodata/bgm/issues/new?title=Issue%20on%20page%20%2Fslides/talk/talk.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/neurodata/bgm"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/neurodata/bgm/issues/new?title=Issue%20on%20page%20%2Fslides/talk/talk.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../_sources/slides/talk/talk.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#">
-   Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
+   Graph matching for connectomics
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
@@ -269,13 +374,18 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#team">
-       Team
+      <a class="reference internal nav-link" href="#these-slides-at">
+       These slides at:
       </a>
      </li>
     </ul>
    </li>
   </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bilaterally-homologous-neuron-pairs">
+   Bilaterally homologous neuron pairs
+  </a>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#larval-drosophila-aka-a-maggot-brain-connectome">
@@ -378,15 +488,14 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
 </ul>
 
-            </nav>
-        </div>
-    </div>
+    </nav>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes</h1>
+                <h1>Graph matching for connectomics</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -398,7 +507,7 @@ const thebe_selector_output = ".output, .cell_output"
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#">
-   Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
+   Graph matching for connectomics
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
@@ -407,13 +516,18 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h3 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#team">
-       Team
+      <a class="reference internal nav-link" href="#these-slides-at">
+       These slides at:
       </a>
      </li>
     </ul>
    </li>
   </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bilaterally-homologous-neuron-pairs">
+   Bilaterally homologous neuron pairs
+  </a>
  </li>
  <li class="toc-h1 nav-item toc-entry">
   <a class="reference internal nav-link" href="#larval-drosophila-aka-a-maggot-brain-connectome">
@@ -520,53 +634,51 @@ const thebe_selector_output = ".output, .cell_output"
                     </div>
                 </div>
             </div>
-            
+            <main id="main-content" role="main">
+                
               <div>
                 
   <!-- _paginate: false -->
 <p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
-<style scoped> 
-/* h1 {
-    font-size:40px;
-} */
-p {
-    font-size: 24px;
-}
-</style>
 <!-- # Generative network modeling reveals a first quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
 <!-- ![icon](../../images/twitter.png) [_@bpedigod (Twitter)_](https://twitter.com/bpedigod) -->
 <!-- # Generative network modeling reveals a quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
-<div class="tex2jax_ignore mathjax_ignore section" id="bisected-graph-matching-improves-automated-pairing-of-bilaterally-homologous-neurons-from-connectomes">
-<h1>Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes<a class="headerlink" href="#bisected-graph-matching-improves-automated-pairing-of-bilaterally-homologous-neurons-from-connectomes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="benjamin-d-pedigo">
-<h2>Benjamin D. Pedigo<a class="headerlink" href="#benjamin-d-pedigo" title="Permalink to this headline">¶</a></h2>
-<p><em>(he/him) - <img alt="icon" src="../../_images/email.png" /> <a class="reference external" href="mailto:bpedigo&#37;&#52;&#48;jhu&#46;edu"><em>bpedigo<span>&#64;</span>jhu<span>&#46;</span>edu</em></a>
-<a class="reference external" href="https://neurodata.io/">NeuroData lab</a></em>
-<em>Johns Hopkins University - Biomedical Engineering</em></p>
-<div class="section" id="team">
-<h3>Team<a class="headerlink" href="#team" title="Permalink to this headline">¶</a></h3>
-<!-- Start people panels -->
-<div class='minipanels'>
+<section class="tex2jax_ignore mathjax_ignore" id="graph-matching-for-connectomics">
+<h1>Graph matching for connectomics<a class="headerlink" href="#graph-matching-for-connectomics" title="Permalink to this headline">#</a></h1>
+<br>
+<div class="columns">
 <div>
-<p><img alt="person" src="../../_images/michael_winding.png" />
-Michael Winding</p>
-</div>
-<div>
-<p><img alt="person" src="../../_images/priebe_carey.jpg" />
-Carey Priebe</p>
+<section id="benjamin-d-pedigo">
+<h2>Benjamin D. Pedigo<a class="headerlink" href="#benjamin-d-pedigo" title="Permalink to this headline">#</a></h2>
+<p>(he/him)
+<a class="reference external" href="https://neurodata.io/">NeuroData lab</a>
+Johns Hopkins University
+Dept. of Biomedical Engineering</p>
+<p><img alt="icon" src="../../_images/email.png" /> <a class="reference external" href="mailto:bpedigo&#37;&#52;&#48;jhu&#46;edu">bpedigo<span>&#64;</span>jhu<span>&#46;</span>edu</a>
+<img alt="icon" src="../../_images/github.png" /> <a class="reference external" href="https://github.com/bdpedigo">&#64;bdpedigo (Github)</a>
+<img alt="icon" src="../../_images/twitter.png" /> <a class="reference external" href="https://twitter.com/bpedigod">&#64;bpedigod (Twitter)</a>
+<img alt="icon" src="../../_images/web.png" /> <a class="reference external" href="https://bdpedigo.github.io/">bdpedigo.github.io</a></p>
 </div>
 <div>
-<p><img alt="person" src="../../_images/vogelstein_joshua.jpg" />
-Joshua Vogelstein</p>
-</div>
-<!-- End people panels -->
-</div>
-</div>
+<section id="these-slides-at">
+<h3>These slides at:<a class="headerlink" href="#these-slides-at" title="Permalink to this headline">#</a></h3>
+<!-- ### [tinyurl.com/princeton-bilarva](https://tinyurl.com/princeton-bilarva) -->
 </div>
 </div>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="larval-drosophila-aka-a-maggot-brain-connectome">
-<h1>Larval <em>Drosophila</em> (AKA a maggot) brain connectome<a class="headerlink" href="#larval-drosophila-aka-a-maggot-brain-connectome" title="Permalink to this headline">¶</a></h1>
+<!-- Timing: 23:00  -->
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="bilaterally-homologous-neuron-pairs">
+<h1>Bilaterally homologous neuron pairs<a class="headerlink" href="#bilaterally-homologous-neuron-pairs" title="Permalink to this headline">#</a></h1>
+<p>We believe a matching exists!</p>
+<p><img alt="center" src="../../_images/mbon-expression.jpg" /></p>
+<!-- _footer: Eschbach et al. eLife (2021) -->
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="larval-drosophila-aka-a-maggot-brain-connectome">
+<h1>Larval <em>Drosophila</em> (AKA a maggot) brain connectome<a class="headerlink" href="#larval-drosophila-aka-a-maggot-brain-connectome" title="Permalink to this headline">#</a></h1>
 <div class="columns">
 <div>
 <!-- See [Michael Windings's talk](https://conference.neuromatch.io/abstract?edition=2021-4&submission_id=recVeh4RZFFRAQnIo) -->
@@ -584,10 +696,10 @@ Joshua Vogelstein</p>
 <footer>
 Winding, Pedigo et al. “The complete connectome of an insect brain.” In prep. (2022)
 </footer>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="neuron-pairs">
-<h1>Neuron pairs<a class="headerlink" href="#neuron-pairs" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="neuron-pairs">
+<h1>Neuron pairs<a class="headerlink" href="#neuron-pairs" title="Permalink to this headline">#</a></h1>
 <div class="columns2-bl">
 <div>
 <p><img alt="center h:550" src="../../_images/match-neuron-morphology.png" /></p>
@@ -596,10 +708,10 @@ Winding, Pedigo et al. “The complete connectome of an insect brain.” In prep
 <p><img alt="center h:350" src="../../_images/pair-rank-panel.png" /></p>
 </div>
 </div>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="why-care-about-the-pairs">
-<h1>Why care about the pairs?<a class="headerlink" href="#why-care-about-the-pairs" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="why-care-about-the-pairs">
+<h1>Why care about the pairs?<a class="headerlink" href="#why-care-about-the-pairs" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
 <li><p>Understand stereotypy</p></li>
 <li><p>Proofreading</p></li>
@@ -610,29 +722,29 @@ Winding, Pedigo et al. “The complete connectome of an insect brain.” In prep
 </li>
 <li><p>Useful to collapse complexity by ~2</p></li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="can-we-use-networks-to-predict-this-matching">
-<h1>Can we use networks to predict this matching?<a class="headerlink" href="#can-we-use-networks-to-predict-this-matching" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="can-we-use-networks-to-predict-this-matching">
+<h1>Can we use networks to predict this matching?<a class="headerlink" href="#can-we-use-networks-to-predict-this-matching" title="Permalink to this headline">#</a></h1>
 <p><img alt="center h:500" src="../../_images/the-wire.png" /></p>
 <!-- _footer: The Wire, Season 3, Episode 7 -->
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-what-is-it">
-<h1>Graph matching - what is it?<a class="headerlink" href="#graph-matching-what-is-it" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="graph-matching-what-is-it">
+<h1>Graph matching - what is it?<a class="headerlink" href="#graph-matching-what-is-it" title="Permalink to this headline">#</a></h1>
 <p><img alt="center" src="../../_images/network-matching-explanation.svg" /></p>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-how-do-we-know-if-we-re-doing-good">
-<h1>Graph matching - how do we know if we’re doing good?<a class="headerlink" href="#graph-matching-how-do-we-know-if-we-re-doing-good" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="graph-matching-how-do-we-know-if-we-re-doing-good">
+<h1>Graph matching - how do we know if we’re doing good?<a class="headerlink" href="#graph-matching-how-do-we-know-if-we-re-doing-good" title="Permalink to this headline">#</a></h1>
 <style scoped>
 h2 {
     justify-content: center;
     text-align: center;
 }
 </style>
-<div class="section" id="min-p-in-mathcal-p-a-p-b-p-t-f-2">
-<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2" title="Permalink to this headline">¶</a></h2>
+<section id="min-p-in-mathcal-p-a-p-b-p-t-f-2">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#min-p-in-mathcal-p-a-p-b-p-t-f-2" title="Permalink to this headline">#</a></h2>
 <div class="columns2-bl">
 <div>
 <ul class="simple">
@@ -645,19 +757,19 @@ h2 {
 <p><img alt="h:300" src="../../_images/perm-matrix.png" /></p>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="graph-matching-how-do-we-do-it">
-<h1>Graph matching - how do we do it?<a class="headerlink" href="#graph-matching-how-do-we-do-it" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="graph-matching-how-do-we-do-it">
+<h1>Graph matching - how do we do it?<a class="headerlink" href="#graph-matching-how-do-we-do-it" title="Permalink to this headline">#</a></h1>
 <style scoped>
 h2 {
     justify-content: center;
     text-align: center;
 }
 </style>
-<div class="section" id="id1">
-<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h2><span class="math notranslate nohighlight">\(\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2\)</span><a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Search space is not convex:</p>
 <ul>
@@ -678,11 +790,11 @@ h2 {
 </li>
 </ul>
 <!-- _footer: Vogelstein et al. 2015 - Fast approximate quadratic (FAQ) algorithm -->
-</div>
-</div>
+</section>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="how-does-it-do-on-the-maggot-brain">
-<h1>How does it do on the maggot brain?<a class="headerlink" href="#how-does-it-do-on-the-maggot-brain" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="how-does-it-do-on-the-maggot-brain">
+<h1>How does it do on the maggot brain?<a class="headerlink" href="#how-does-it-do-on-the-maggot-brain" title="Permalink to this headline">#</a></h1>
 <div class="columns2-bl">
 <div>
 <p><img alt="center h:400" src="_build/html/_images/left-pair-predictions.svg" /></p>
@@ -708,16 +820,16 @@ h1, h2 {
     text-align: center;
 }
 </style>
-</div>
-<div class="tex2jax_ignore mathjax_ignore section" id="thus-far-we-ve-not-used-the-contralateral-connections">
-<h1>Thus far, we’ve not used the contralateral connections<a class="headerlink" href="#thus-far-we-ve-not-used-the-contralateral-connections" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="these-are-about-1-3-of-the-edges-in-the-brain">
-<h2>These are about 1/3 of the edges in the brain!<a class="headerlink" href="#these-are-about-1-3-of-the-edges-in-the-brain" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="thus-far-we-ve-not-used-the-contralateral-connections">
+<h1>Thus far, we’ve not used the contralateral connections<a class="headerlink" href="#thus-far-we-ve-not-used-the-contralateral-connections" title="Permalink to this headline">#</a></h1>
+<section id="these-are-about-1-3-of-the-edges-in-the-brain">
+<h2>These are about 1/3 of the edges in the brain!<a class="headerlink" href="#these-are-about-1-3-of-the-edges-in-the-brain" title="Permalink to this headline">#</a></h2>
+</section>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="from-graph-matching-to-bisected-graph-matching">
-<h1>From graph matching to bisected graph matching<a class="headerlink" href="#from-graph-matching-to-bisected-graph-matching" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="from-graph-matching-to-bisected-graph-matching">
+<h1>From graph matching to bisected graph matching<a class="headerlink" href="#from-graph-matching-to-bisected-graph-matching" title="Permalink to this headline">#</a></h1>
 <p><img alt="" src="../../_images/explain.svg" /></p>
 <!-- --LL: #66c2a5;
     --RR: #fc8d62;
@@ -728,10 +840,10 @@ h1, h2 {
 <p>New gradient:</p>
 <div class="math notranslate nohighlight">
 \[\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + \textcolor{#66c2a5}{A_{LL}}^TP\textcolor{#fc8d62}{A_{RR}} + \textcolor{#8da0cb}{A_{LR}} P^T \textcolor{#e78ac3}{A_{RL}}^T + \textcolor{#e78ac3}{A_{RL}}^T P^T \textcolor{#8da0cb}{A_{LR}}\]</div>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="simulations">
-<h1>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="simulations">
+<h1>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">#</a></h1>
 <div class="columns">
 <div>
 <ul class="simple">
@@ -748,15 +860,15 @@ h1, h2 {
 <p><img alt="" src="../../_images/match_ratio_by_contra_rho.svg" /></p>
 </div>
 </div>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="connectome-datasets">
-<h1>Connectome datasets<a class="headerlink" href="#connectome-datasets" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="connectome-datasets">
+<h1>Connectome datasets<a class="headerlink" href="#connectome-datasets" title="Permalink to this headline">#</a></h1>
 <p><img alt="center h:550" src="../../_images/match_accuracy_comparison.svg" /></p>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="summary">
-<h1>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="summary">
+<h1>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">#</a></h1>
 <p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
 <ul class="simple">
 <li><p>Modified the graph matching problem to allow us to incorporate information from contralateral connections in the brain</p></li>
@@ -766,10 +878,10 @@ can help with matching</p></li>
 <li><p>Demonstrated that this indeed improves matching in five different bilateral connectome
 datasets</p></li>
 </ul>
-</div>
+</section>
 <hr class="docutils" />
-<div class="tex2jax_ignore mathjax_ignore section" id="more-info">
-<h1>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="more-info">
+<h1>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">#</a></h1>
 <p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
 <div class="columns">
 <div>
@@ -788,7 +900,7 @@ datasets</p></li>
 </ul>
 </div>
 </div>
-<!-- _footer:  --></div>
+<!-- _footer:  --></section>
 
     <script type="text/x-thebe-config">
     {
@@ -812,28 +924,34 @@ datasets</p></li>
 
               </div>
               
-            
-                <!-- Previous / next buttons -->
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
 <div class='prev-next-area'>
 </div>
-            
+            </footer>
         </div>
     </div>
-    <footer class="footer">
-  <p>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Benjamin D. Pedigo<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
     
-      By Benjamin D. Pedigo<br/>
-    
-        &copy; Copyright 2022.<br/>
-  </p>
-</footer>
-</main>
+</div>
 
 
       </div>
     </div>
   
-  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
 
   </body>
 </html>
