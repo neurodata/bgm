@@ -9,56 +9,54 @@ paginate: true
 ![bg center blur:3px opacity:15%](./../../images/background.svg)
 
 
-<style scoped> 
-/* h1 {
-    font-size:40px;
-} */
-p {
-    font-size: 24px;
-}
-</style>
+
 
 <!-- # Generative network modeling reveals a first quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
 <!-- ![icon](../../images/twitter.png) [_@bpedigod (Twitter)_](https://twitter.com/bpedigod) -->
 
 
 <!-- # Generative network modeling reveals a quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
-# Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
+# Graph matching for connectomics
+
+<br>
+
+<div class="columns">
+<div>
 
 ## Benjamin D. Pedigo
-_(he/him) - ![icon](../../images/email.png) [_bpedigo@jhu.edu_](mailto:bpedigo@jhu.edu) 
-[NeuroData lab](https://neurodata.io/)_
-_Johns Hopkins University - Biomedical Engineering_
-
-#### Team
-<!-- Start people panels -->
-<div class='minipanels'>
+(he/him)
+[NeuroData lab](https://neurodata.io/)
+Johns Hopkins University
+Dept. of Biomedical Engineering
 
 
+![icon](../../images/email.png) [bpedigo@jhu.edu](mailto:bpedigo@jhu.edu)
+![icon](../../images/github.png) [@bdpedigo (Github)](https://github.com/bdpedigo)
+![icon](../../images/twitter.png) [@bpedigod (Twitter)](https://twitter.com/bpedigod)
+![icon](../../images/web.png) [bdpedigo.github.io](https://bdpedigo.github.io/)
+
+</div>
 <div>
 
-![person](./../../images/people/michael_winding.png)
-Michael Winding
+### These slides at: 
+<!-- ### [tinyurl.com/princeton-bilarva](https://tinyurl.com/princeton-bilarva) -->
+
 
 </div>
-
-
-<div>
-
-![person](./../../images/people/priebe_carey.jpg)
-Carey Priebe
-
 </div>
 
-<div>
+---
 
-![person](./../../images/people/vogelstein_joshua.jpg)
-Joshua Vogelstein
+<!-- Timing: 23:00  -->
 
-</div>
+# Bilaterally homologous neuron pairs 
 
-<!-- End people panels -->
-</div>
+We believe a matching exists!
+
+![center](./../../images/mbon-expression.jpg)
+
+<!-- _footer: Eschbach et al. eLife (2021) -->
+
 
 ---
 
