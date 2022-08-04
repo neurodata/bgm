@@ -4,11 +4,19 @@ theme: slides
 size: 16:9
 paginate: true
 ---
+
+<style>
+h5 {
+    justify-content: center;
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+</style>
+
 <!-- _paginate: false -->
 
 ![bg center blur:3px opacity:15%](./../../images/background.svg)
-
-
 
 
 <!-- # Generative network modeling reveals a first quantitative definition of bilateral symmetry exhibited by a whole insect brain connectome -->
@@ -134,6 +142,7 @@ So for an adjacency matrix, we always want $PAP^T$!
 ---
 # A permutation of one network with respect to another is an {alignment, matching, pairing}
 
+So we are searching for a permutation of $B$ with respect to some fixed ordering of $A$
 
 --- 
 # What is graph matching?
@@ -144,20 +153,35 @@ So for an adjacency matrix, we always want $PAP^T$!
 # Framing the graph matching problem mathematically
 
 <style scoped>
-h2,h5 {
+h4 {
     justify-content: center;
     text-align: center;
 }
 </style>
 
-## $\min_{P \in \mathcal{P}} \underbrace{\|A - \overbrace{PBP^T}^{\text{reordered } B}\|_F^2}_{\text{distance between adj. mats.}}$
+##### $\min_{P \in \mathcal{P}} \underbrace{\|A - \overbrace{PBP^T}^{\text{reordered } B}\|_F^2}_{\text{distance between adj. mats.}}$
 
-##### where $\mathcal{P}$ is the set of permutation matrices
+#### where $\mathcal{P}$ is the set of permutation matrices
 
 <br>
 
 - Measures the number of edge disagreements for unweighted networks,
 - Norm of edge disagreements for weighted networks
+
+---
+
+
+
+# Why is it hard
+
+##### $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2$
+
+- Search space is absurdly large
+   - $|\mathcal{P}| = n!$
+   - $n = 335 \rightarrow |\mathcal{P}| \approx 10^{82}$ (more than number of atoms in universe)
+- Search space is not convex
+    - $0.5 P_1 + 0.5 P_2 \notin \mathcal{P}$
+
 
 <!-- ---
 
@@ -190,22 +214,20 @@ h2 {
 }
 </style>
 
-## $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2$
-- Search space is not convex:
-    - $0.5 P_1 + 0.5 P_2 \notin \mathcal{P}$
+##### $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2$
 - Relax to the "birkoff polytope:" doubly stochastic matrices
     - Rows and columns all sum to 1, but not all elements have to be 1 
     - Similar to *transport* as opposed to *assignment* problems: we are still mapping nodes between networks, but this is a *soft* mapping
 - Apply Frank-Wolfe method
     - Minimize a first-order Taylor series of the objective function over a convex set
     - Requires a gradient $\nabla f(P)$
-
+- Project back to set of permutations when done
 <!-- _footer: Vogelstein et al. 2015 - Fast approximate quadratic (FAQ) algorithm -->
 
 ---
 # Let's try it out... 
 
-##### `graspologic`
+#### `graspologic`
 ```
 from graspologic.match import GraphMatch
 
@@ -215,7 +237,7 @@ perm = gm.perm_inds_ # indices representing the permutation
 B_permuted = B[perm][:, perm]
 ```
 
-##### `SciPy`
+#### `SciPy`
 ```
 from scipy.optimize import quadratic_assignment
 
@@ -299,7 +321,7 @@ With "vanilla" graph matching: ~80% correct (according to expert annotator)
 ## $\min_{P \in \mathcal{P_{s}}} \|A - P B P^T\|_F^2$
 ##### where $\mathcal{P_{s}}$ is the set of permutations which respect your known, partial pairing
 
-##### `graspologic`
+#### `graspologic`
 ```
 from graspologic.match import GraphMatch
 
@@ -317,7 +339,7 @@ If $S$ is a matrix representing the similarity of each object in $A$ (rows) to e
 ## $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2 + trace(SP^T)$
 
 
-##### `graspologic`
+#### `graspologic`
 ```
 from graspologic.match import GraphMatch
 
@@ -332,7 +354,7 @@ gm.fit(A, B, S=S)
 
 <br>
 
-##### `graspologic` (in development)
+#### `graspologic` (in development)
 ```
 from graspologic.match import graph_match
 
@@ -372,6 +394,8 @@ New gradient:
 
 $$\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + \textcolor{#66c2a5}{A_{LL}}^TP\textcolor{#fc8d62}{A_{RR}} + \textcolor{#8da0cb}{A_{LR}} P^T \textcolor{#e78ac3}{A_{RL}}^T + \textcolor{#e78ac3}{A_{RL}}^T P^T \textcolor{#8da0cb}{A_{LR}}$$
 
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
+
 ---
 # Simulations
 
@@ -391,10 +415,15 @@ $$\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + 
 </div>
 </div>
 
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
+
+
 --- 
 # Connectome datasets
 
 ![center h:550](./../../../results/figs/connectomes/match_accuracy_comparison.svg)
+
+<!-- _footer: Pedigo et al. bioRxiv (2022) -->
 
 <!-- ---
 # Summary 
@@ -407,6 +436,7 @@ $$\nabla f(P) = - \textcolor{#66c2a5}{A_{LL}} P \textcolor{#fc8d62}{A_{RR}}^T + 
   can help with matching
 - Demonstrated that this indeed improves matching in five different bilateral connectome
   datasets  -->
+
 
 ---
 
@@ -423,9 +453,24 @@ where:
 
 ---
 
+# Practical considerations
+
+- Networks not same size (see `padding`)
+- Stopping tolerance for the algorithm
+  - `max_iter` controls the maximum number of iterations (default is 30). If results are poor and computation is not taking too long, can try increasing 
+  - `tol` is a stopping tolerance, same considerations as the above
+- Initialization
+  - Controlled by `init` parameter
+  - Default is the "barycenter": can think of as an uninformative initialization
+- Number of restarts
+  - Algorithm is typically not deterministic, even from the same initialization
+  - `n_init` parameter controls number of restarts
+
+---
+
 # Putting it all together in the (new) code
 
-##### `graspologic` (in development)
+#### `graspologic` (in development)
 ```
 from graspologic.match import graph_match 
 
@@ -443,21 +488,6 @@ indices_A, indices_B, score, misc = graph_match(A_ll, # left-to-left
 `misc` is a dictionary with extra details about the optimization path
 
 ---
-
-# Practical considerations
-
-- Networks not of the same size (see `padding`)
-- Stopping tolerance for the algorithm
-  - `max_iter` controls the maximum number of iterations (default is 30). If results are poor and computation is not taking too long, can try increasing 
-  - `tol` is a stopping tolerance, same considerations as the above
-- Initialization
-  - Controlled by `init` parameter
-  - Default is the "barycenter": can think of as an uninformative initialization
-- Number of restarts
-  - Algorithm is typically not deterministic, even from the same initialization
-  - `n_init` parameter controls number of restarts
-
----
 # R code
 
 https://github.com/dpmcsuss/iGraphMatch/
@@ -470,20 +500,70 @@ https://github.com/dpmcsuss/iGraphMatch/
 <div class="columns">
 <div>
 
-- Tutorial on graph matching [https://bdpedigo.github.io/networks-course/graph_matching.html](https://bdpedigo.github.io/networks-course/graph_matching.html)
-- Code in graspologic [https://microsoft.github.io/graspologic/latest/reference/reference/match.html](https://microsoft.github.io/graspologic/latest/reference/reference/match.html)
-- Code in SciPy [https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html)
+- Tutorial on graph matching [bdpedigo.github.io/networks-course/graph_matching.html](https://bdpedigo.github.io/networks-course/graph_matching.html)
+- Code in graspologic [microsoft.github.io/graspologic/latest/reference/reference/match.html](https://microsoft.github.io/graspologic/latest/reference/reference/match.html)
+- Code in SciPy [docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.quadratic_assignment.html)
   
-Big thanks to Ali Saad-Eldin for writing most of the code!
-
 </div>
 <div>
 
-- This repo: [https://github.com/neurodata/bgm](https://github.com/neurodata/bgm)
-- Jupyter Book on BGM: [http://docs.neurodata.io/bgm/abstract.html](http://docs.neurodata.io/bgm/abstract.html)
-- Manuscript on BGM: [https://www.biorxiv.org/content/10.1101/2022.05.19.492713](https://www.biorxiv.org/content/10.1101/2022.05.19.492713)
+- This repo: [github.com/neurodata/bgm](https://github.com/neurodata/bgm)
+- Jupyter Book on BGM: [docs.neurodata.io/bgm/abstract.html](http://docs.neurodata.io/bgm/abstract.html)
+- Manuscript on BGM: [biorxiv.org/content/10.1101/2022.05.19.492713](https://www.biorxiv.org/content/10.1101/2022.05.19.492713)
+- New code [WIP]: [github.com/microsoft/graspologic/pull/960](https://github.com/microsoft/graspologic/pull/960)
 
 </div>
 </div>
 
-<!-- _footer:  -->
+
+---
+
+<style scoped>
+ul {
+    font-size: 21px;
+}
+</style>
+
+## References / further reading
+
+- Burkard, R. et al. (2012). Assignment Problems. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9781611972238
+- Vogelstein, J. T. et al. (2015). Fast Approximate Quadratic programming for graph matching. PLoS ONE, 10(4), 1–17. https://doi.org/10.1371/journal.pone.0121002
+- Fishkind, D. E. et al. (2019). Seeded graph matching. Pattern Recognition, 87, 203–215. https://doi.org/10.1016/j.patcog.2018.09.014
+- Pantazis, K. et al. (2022). Multiplex graph matching matched filters. Applied Network Science, 7(1), 1–35. https://doi.org/10.1007/s41109-022-00464-0
+- Saad-Eldin, A. et al. (2021). Graph Matching via Optimal Transport. http://arxiv.org/abs/2111.05366
+- Pedigo, B. D. et al. (2022). Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes (p. 2022.05.19.492713). bioRxiv. https://doi.org/10.1101/2022.05.19.492713
+
+## Ackowledgements
+Big thanks to graspologic contributors (especially Ali Saad-Eldin) for work on the code!
+
+---
+
+![bg center blur:3px opacity:15%](./../../images/background.svg)
+
+# Questions?
+
+
+#### Slides: https://tinyurl.com/cambridge-matching
+
+
+<span> </span>
+<span> </span>
+<span> </span>
+
+
+<style scoped>
+section {
+    justify-content: center;
+    text-align: center;
+}
+</style>
+
+### Benjamin D. Pedigo
+![icon](../../images/email.png) [bpedigo@jhu.edu](mailto:bpedigo@jhu.edu)
+![icon](../../images/github.png) [@bdpedigo (Github)](https://github.com/bdpedigo)
+![icon](../../images/twitter.png) [@bpedigod (Twitter)](https://twitter.com/bpedigod)
+![icon](../../images/web.png) [bdpedigo.github.io](https://bdpedigo.github.io/)
+
+
+
+
