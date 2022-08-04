@@ -38,7 +38,7 @@ Dept. of Biomedical Engineering
 </div>
 <div>
 
-### These slides at: 
+### These slides at: https://tinyurl.com/cambridge-matching
 <!-- ### [tinyurl.com/princeton-bilarva](https://tinyurl.com/princeton-bilarva) -->
 
 
@@ -460,6 +460,8 @@ indices_A, indices_B, score, misc = graph_match(A_ll, # left-to-left
 ---
 # R code
 
+https://github.com/dpmcsuss/iGraphMatch/
+
 ---
 # More info 
 
@@ -478,8 +480,8 @@ Big thanks to Ali Saad-Eldin for writing most of the code!
 <div>
 
 - This repo: [https://github.com/neurodata/bgm](https://github.com/neurodata/bgm)
-- This Jupyter Book: [http://docs.neurodata.io/bgm/abstract.html](http://docs.neurodata.io/bgm/abstract.html)
-- This manuscript: [https://www.biorxiv.org/content/10.1101/2022.05.19.492713](https://www.biorxiv.org/content/10.1101/2022.05.19.492713)
+- Jupyter Book on BGM: [http://docs.neurodata.io/bgm/abstract.html](http://docs.neurodata.io/bgm/abstract.html)
+- Manuscript on BGM: [https://www.biorxiv.org/content/10.1101/2022.05.19.492713](https://www.biorxiv.org/content/10.1101/2022.05.19.492713)
 
 </div>
 </div>
