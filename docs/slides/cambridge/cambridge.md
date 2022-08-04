@@ -293,6 +293,24 @@ p {
 With "vanilla" graph matching: ~80% correct (according to expert annotator)
 
 ---
+
+# Examining the quality of the proofread pairs
+
+<div class="columns2-bl">
+<div>
+
+![center h:525](./../../images/match-neuron-morphology.png)
+
+</div>
+<div>
+
+![center h:350](./../../images/pair-rank-panel.png)
+
+</div>
+
+<!-- _footer: Winding, Pedigo et al. Submitted (2022) -->
+
+---
 # Many ways to try to improve on this...
 
 <div class="columns">
