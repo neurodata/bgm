@@ -128,6 +128,8 @@ section {
 </div>
 </div>
 
+<!-- _footer: Wikipedia (Adjacency matrix) -->
+
 --- 
 # Any permutation of an adjacency matrix is equally valid
 
@@ -138,6 +140,8 @@ section {
 $PA$ permutes the rows of $A$
 $AP^T$ permutes the columns of $A$
 So for an adjacency matrix, we always want $PAP^T$!
+
+<!-- _footer: Wikipedia (Permutation) -->
 
 ---
 # A permutation of one network with respect to another is an {alignment, matching, pairing}
@@ -336,8 +340,8 @@ With "vanilla" graph matching: ~80% correct (according to expert annotator)
 ---
 # Seeds (partial known pairing of nodes)
 
-## $\min_{P \in \mathcal{P_{s}}} \|A - P B P^T\|_F^2$
-##### where $\mathcal{P_{s}}$ is the set of permutations which respect your known, partial pairing
+##### $\min_{P \in \mathcal{P_{s}}} \|A - P B P^T\|_F^2$
+#### where $\mathcal{P_{s}}$ is the set of permutations which respect your known, partial pairing
 
 #### `graspologic`
 ```
@@ -354,7 +358,7 @@ gm.fit(A, B, seeds_A=[1,2,3], seeds_B=[4,5,1])
 
 If $S$ is a matrix representing the similarity of each object in $A$ (rows) to each object in $B$ (columns)...
 
-## $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2 + trace(SP^T)$
+##### $\min_{P \in \mathcal{P}} \|A - P B P^T\|_F^2 + trace(SP^T)$
 
 
 #### `graspologic`
@@ -368,7 +372,7 @@ gm.fit(A, B, S=S)
 ---
 # Edge types (multilayer graph matching)
 
-## $\min_{P \in \mathcal{P}} \|A^{(1)} - P B^{(1)} P^T\|_F^2 + \|A^{(2)} - P B^{(2)} P^T\|_F^2 + ...$
+##### $\min_{P \in \mathcal{P}} \|A^{(1)} - P B^{(1)} P^T\|_F^2 + \|A^{(2)} - P B^{(2)} P^T\|_F^2 + ...$
 
 <br>
 
@@ -468,6 +472,12 @@ where:
 - $A_{LR}$ and $A_{RL}$ are the between-hemisphere (contralateral) subgraphs.
 - $S$ is a matrix of similarity scores between neurons, e.g. morphology (NBLAST).
 - $K$ is the number of *layers* or edge types e.g. axo-axonic, axo-dendritic, etc.
+
+---
+
+# Combining "extra information" can be even more helpful
+
+![center](../../images/matching_accuracy_upset.svg)
 
 ---
 
