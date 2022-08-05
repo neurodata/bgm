@@ -1,4 +1,4 @@
-from .palette import method_palette, subgraph_palette
+from .palette import method_palette, subgraph_palette, dashes
 from .scatter import matched_stripplot
 from .theme import set_theme
 from .utils import (

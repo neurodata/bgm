@@ -129,7 +129,7 @@ def shuffle_edges(adjacency, effect_size=100, rng=None, max_tries=None):
 
     n_nonzero = np.count_nonzero(adjacency)
     if effect_size > n_nonzero:
-        return None
+        raise UserWarning("Big effect size")
 
     row_inds, col_inds = np.nonzero(adjacency)
 
@@ -143,7 +143,8 @@ def shuffle_edges(adjacency, effect_size=100, rng=None, max_tries=None):
     n_target = adjacency.shape[1]
     n_possible = n_source * n_target
     if effect_size > n_possible:  # technicall should be - n if on main diagonal
-        return None
+        raise UserWarning("Big effect size")
+        # return None
 
     n_edges_added = 0
     tries = 0
@@ -165,15 +166,16 @@ from graspologic.match import graph_match
 RERUN_SIMS = True
 datasets = ["male_chem", "herm_chem", "specimen_148", "specimen_107"]
 
-n_sims = 10
+n_sims = 100
 glue("n_initializations", n_sims)
 
 p_shuffles = np.linspace(0, 0.9, 10)  # [0, 0.25, 0.5, 0.75]
 contra_weight_ratios = {}
 results_by_dataset = {}
 
+
 rows = []
-with tqdm(total=len(datasets) * len(p_shuffles) * len(p_shuffles) * n_sims * 2) as pbar:
+with tqdm(total=len(datasets) * len(p_shuffles) * n_sims * 2) as pbar:
     for dataset in datasets:
         adj, nodes = load_split_connectome(dataset)
         n_nodes = len(nodes)
@@ -188,15 +190,14 @@ with tqdm(total=len(datasets) * len(p_shuffles) * len(p_shuffles) * n_sims * 2) 
 
         # B = adj[right_inds][:, right_inds]
         # BA = adj[right_inds][:, left_inds]
-        for p_shuffle_ipsi in p_shuffles:
+        for p_shuffle in p_shuffles:
             # for p_shuffle_contra in p_shuffles:
-            effect_size_ipsi = int(np.floor(p_shuffle_ipsi * n_edges_ipsi))
-            B = shuffle_edges(A, effect_size=effect_size_ipsi)
+            effect_size_ipsi = int(np.floor(p_shuffle * n_edges_ipsi))
+            B = shuffle_edges(A, effect_size=effect_size_ipsi, rng=rng)
 
-            effect_size_contra = int(np.floor(p_shuffle_contra * n_edges_contra))
-            BA = shuffle_edges(AB, effect_size=effect_size_contra)
+            effect_size_contra = int(np.floor(p_shuffle * n_edges_contra))
+            BA = shuffle_edges(AB, effect_size=effect_size_contra, rng=rng)
 
-            seed = rng.integers(np.iinfo(np.uint32).max)
             seeds = rng.integers(np.iinfo(np.uint32).max, size=n_sims)
 
             for sim, seed in enumerate(seeds):
@@ -204,9 +205,7 @@ with tqdm(total=len(datasets) * len(p_shuffles) * len(p_shuffles) * n_sims * 2) 
                     run_start = time.time()
                     if method == "GM":
                         # solver = GraphMatchSolver(A, B, rng=seed)
-                        indices_A, indices_B, score, misc = graph_match(
-                            A, B, rng=seed
-                        )
+                        indices_A, indices_B, score, misc = graph_match(A, B, rng=seed)
                     elif method == "BGM":
                         # solver = GraphMatchSolver(A, B, AB=AB, BA=BA, rng=seed)
                         indices_A, indices_B, score, misc = graph_match(
@@ -225,8 +224,9 @@ with tqdm(total=len(datasets) * len(p_shuffles) * len(p_shuffles) * n_sims * 2) 
                             "n_iter": misc[0]["n_iter"],
                             "score": score,
                             "dataset": dataset,
-                            "p_shuffle_ipsi": p_shuffle_ipsi,
-                            "p_shuffle_contra": p_shuffle_contra,
+                            "p_shuffle": p_shuffle
+                            # "p_shuffle_ipsi": p_shuffle_ipsi,
+                            # "p_shuffle_contra": p_shuffle_contra,
                         }
                     )
                     pbar.update(1)
@@ -236,6 +236,19 @@ with tqdm(total=len(datasets) * len(p_shuffles) * len(p_shuffles) * n_sims * 2) 
 
     # else:
     #     results = pd.read_csv(OUT_PATH / f"{dataset}_match_results.csv", index_col=0)
+
+#%%
+
+set_theme(font_scale=1)
+
+fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+
+for i, dataset in enumerate(datasets):
+    dataset_results = results[results["dataset"] == dataset]
+    ax = axs.flat[i]
+    sns.lineplot(
+        data=dataset_results, x="p_shuffle", y="match_ratio", hue="method", ax=ax
+    )
 
 
 #%%

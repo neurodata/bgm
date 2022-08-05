@@ -10,3 +10,5 @@ method_palette = dict(zip(["GM", "BGM"], [tab10_colorblind[0], tab10_colorblind[
 
 set2 = sns.color_palette("Set2")
 subgraph_palette = dict(zip(["LL", "RR", "LR", "RL"], set2))
+
+dashes = {"GM": (3, 1), "BGM": ""}

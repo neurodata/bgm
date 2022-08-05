@@ -7,7 +7,7 @@ authors = ["Benjamin D. Pedigo <bpedigo@jhu.edu>"]
 [tool.poetry.dependencies]
 python = "3.9.*"
 pkg = {path = "pkg", develop = true}
-graspologic = "^1.0.0"
+graspologic = {path="../graspologic", develop=true}
 jupyter-client = "6.1.12" # https://github.com/jupyter/jupyter_client/issues/637
 svgutils = "^0.3.4"
 python-catmaid = "^2.1.1"
