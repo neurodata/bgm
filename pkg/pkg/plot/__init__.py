@@ -15,3 +15,4 @@ from .utils import (
     remove_shared_ax,
     shrink_axis,
 )
+from .pymaid import simple_plot_neurons, rgb2hex

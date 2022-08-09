@@ -182,9 +182,13 @@ def create_node_data(node_ids, exceptions=[]):
             side_indicator_loc = right_pos if is_right else left_pos
             node_pair = node_id[:side_indicator_loc] + node_id[side_indicator_loc + 1 :]
             hemisphere = "R" if is_right else "L"
-            node_rows.append(
-                {"node_id": node_id, "pair": node_pair, "hemisphere": hemisphere}
-            )
+        else:
+            node_pair = node_id
+            hemisphere = "C"
+
+        node_rows.append(
+            {"node_id": node_id, "pair": node_pair, "hemisphere": hemisphere}
+        )
 
     nodes = pd.DataFrame(node_rows).set_index("node_id")
 

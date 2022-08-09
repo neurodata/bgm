@@ -159,3 +159,4 @@ data/maggot/pairs-2021-04-06.csv
 results/outputs/*
 !results/outputs/connectomes
 results/figs/size_simulations
+data/maggot/meta_data.csv

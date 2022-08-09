@@ -140,4 +140,3 @@ for i, (contra_rho, group_data) in enumerate(results.groupby("contra_rho")):
 
 gluefig("matching_accuracy_size", fig)
 
-#%%

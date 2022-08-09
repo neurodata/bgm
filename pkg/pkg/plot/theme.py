@@ -51,7 +51,7 @@ def set_theme(
     axes_labelcolor="black",
     text_color="black",
     context="talk",
-    tick_size=0,
+    tick_size=5,
     font_scale=1,
 ):
     if theme is None:

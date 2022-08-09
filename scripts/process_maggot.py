@@ -128,6 +128,7 @@ adj_df = pd.DataFrame(
     data=adj_df.values.astype(int), index=adj_df.index, columns=adj_df.columns
 )
 
+
 #%% [markdown]
 # ## Filter data
 # Make sure neurons are lateralized and fully connected
