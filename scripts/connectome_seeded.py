@@ -1,29 +1,23 @@
 #%% [markdown]
-# # Maggot connectome subset
+# # Maggot connectome subset with seeds
 #%%
 import datetime
-import logging
 import time
-from unittest import result
-
-import matplotlib as mpl
+import logging
+import pymaid
 import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 import pandas as pd
-import pymaid
 import seaborn as sns
 from graspologic.match import graph_match
-from graspologic.plot import adjplot
 from matplotlib.lines import Line2D
 from matplotlib.transforms import blended_transform_factory
-from pkg.data import DATA_PATH, load_split_connectome
+from pkg.data import load_semipaired_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.plot import (
     dashes,
-    matched_stripplot,
     method_palette,
     rgb2hex,
     set_theme,
@@ -31,10 +25,9 @@ from pkg.plot import (
     subgraph_palette,
 )
 from scipy.optimize import linear_sum_assignment
-from sklearn.model_selection import KFold, train_test_split
+from scipy.stats import wilcoxon
+from sklearn.model_selection import KFold
 from tqdm.autonotebook import tqdm
-from scipy.stats import mannwhitneyu, wilcoxon
-
 
 FILENAME = "connectome_seeded"
 
@@ -56,75 +49,19 @@ def gluefig(name, fig, **kwargs):
         plt.close()
 
 
-t0 = time.time()
-set_theme()
-rng = np.random.default_rng(8888)
-
-
-#%% [markdown]
-# ## Start Catmaid instance on Virtual Fly Brain
-#%%
-
 pymaid.CatmaidInstance("https://l1em.catmaid.virtualflybrain.org/", None)
 logging.getLogger("pymaid").setLevel(logging.WARNING)
 pymaid.clear_cache()
 
 
-#%%
-def get_indicator_from_annotation(annot_name, filt=None):
-    ids = pymaid.get_skids_by_annotation(annot_name.replace("*", "\*"))
-    if filt is not None:
-        name = filt(annot_name)
-    else:
-        name = annot_name
-    indicator = pd.Series(
-        index=ids, data=np.ones(len(ids), dtype=bool), name=name, dtype=bool
-    )
-    return indicator
-
-
-annot_df = pymaid.get_annotated("papers")
-series_ids = []
-
-for annot_name in annot_df["name"]:
-    print(annot_name)
-    indicator = get_indicator_from_annotation(annot_name)
-    if annot_name == "Imambocus et al":
-        indicator.name = "Imambocus et al. 2022"
-    series_ids.append(indicator)
-nodes = pd.concat(series_ids, axis=1, ignore_index=False).fillna(False)
-
-#%%
-raw_path = DATA_PATH / "maggot"
-
-paired_nodes = pd.read_csv(raw_path / "nodes.csv", index_col=0)
+t0 = time.time()
+set_theme()
+rng = np.random.default_rng(8888)
 
 #%%
 
-temp_meta = pd.read_csv("bgm/data/maggot/meta_data.csv", index_col=0)
-temp_meta = temp_meta[temp_meta["hemisphere"] != "C"]
-
-#%%
-intersect_ids = nodes.index.intersection(temp_meta.index)
-nodes = nodes.loc[intersect_ids]
-nodes["hemisphere"] = temp_meta.loc[intersect_ids, "hemisphere"]
-
-#%%
-nodes["pair"] = np.nan
-nodes.loc[paired_nodes.index, "pair"] = paired_nodes["pair"]
-nodes["pair"] = nodes["pair"].astype("Int64")
-nodes
-
-#%%
-nodes = nodes.sort_values("hemisphere")
-nodes
-
-#%%
-
-adj_df = pymaid.adjacency_matrix(nodes.index.values)
-adj_df = pd.DataFrame(
-    data=adj_df.values.astype(int), index=adj_df.index, columns=adj_df.columns
-)
+adj, nodes = load_semipaired_connectome("maggot_subset")
+adj_df = pd.DataFrame(data=adj, index=nodes.index, columns=nodes.index)
 
 #%%
 left_nodes = nodes[nodes["hemisphere"] == "L"]
@@ -138,31 +75,15 @@ rr_adj = adj_df.reindex(index=right_node_ids, columns=right_node_ids).values
 lr_adj = adj_df.reindex(index=left_node_ids, columns=right_node_ids).values
 rl_adj = adj_df.reindex(index=right_node_ids, columns=left_node_ids).values
 
-print(len(left_node_ids))
-print(len(right_node_ids))
+n_left = len(left_node_ids)
+n_right = len(right_node_ids)
 
-
-#%%
-# indices_A, indices_B, score, misc = graph_match(
-#     ll_adj,
-#     rr_adj,
-#     rng=rng,
-#     verbose=1,
-#     n_init=1,
-# )
-
-# left_nodes_sorted = left_nodes.iloc[indices_A]
-# right_nodes_sorted = right_nodes.iloc[indices_B]
-
-# equal_pairs = left_nodes_sorted["pair"].values == right_nodes_sorted["pair"].values
-# real_pairs = (~left_nodes_sorted["pair"].isna().values) & (
-#     ~right_nodes_sorted["pair"].isna().values
-# )
-
-# match_ratio = np.mean(equal_pairs[real_pairs])
-# print(f"Match ratio = {match_ratio}")
+glue("n_left", n_left)
+glue("n_right", n_right)
 
 #%%
+
+
 def select_seeds(left_nodes, right_nodes, pairs="all"):
     left_nodes = left_nodes.copy()
     right_nodes = right_nodes.copy()
@@ -191,11 +112,12 @@ def select_seeds(left_nodes, right_nodes, pairs="all"):
 all_seeds = select_seeds(left_nodes, right_nodes)
 
 indices = np.arange(len(all_seeds))
+n_seeds_range = [0, 100, 200, 300, 400]
 
-n_folds = 10
+n_folds = 5
 glue("n_folds", n_folds)
 
-rerun = False
+rerun = True
 if rerun:
     rows = []
     kfold = KFold(
@@ -204,7 +126,6 @@ if rerun:
         random_state=rng.integers(np.iinfo(np.uint32).max),
     )
 
-    n_seeds_range = [0, 100, 200, 300, 400]
     pbar = tqdm(total=n_folds * len(n_seeds_range) * 2)
     for fold, (indices_train, indices_test) in enumerate(kfold.split(indices)):
 
@@ -276,6 +197,7 @@ sns.lineplot(
 sns.move_legend(ax, loc="lower right", title="Method")
 ax.set(ylabel="Matching accuracy", xlabel="Number of seeds", xticks=n_seeds_range)
 gluefig("accuracy_by_seeds", fig)
+
 #%%
 
 stat_rows = []
@@ -283,33 +205,51 @@ for n_seeds, seed_results in results.groupby("n_seeds"):
     ratios = []
     for method, method_results in seed_results.groupby("method"):
         ratios.append(method_results["match_ratio"])
+
+    # believe this should be wilcoxon, paired across folds
+    stat, pvalue = wilcoxon(*ratios, method="exact", zero_method="wilcox")
     # stat, pvalue = mannwhitneyu(*ratios)
-    stat, pvalue = wilcoxon(*ratios)
+
     stat_rows.append({"n_seeds": n_seeds, "pvalue": pvalue, "stat": stat})
 stat_results = pd.DataFrame(stat_rows)
+stat_results.to_csv(OUT_PATH / "seeded_stat_results")
 stat_results
+
+#%%
+for n_seeds, seed_results in results.groupby("n_seeds"):
+    ratios = []
+    for method, method_results in seed_results.groupby("method"):
+        ratios.append(method_results["match_ratio"])
+    print(ratios[1].values - ratios[0].values)
 
 #%%
 n_init = 100
 glue("full_seed_n_init", n_init)
 
-rng = np.random.default_rng(88888)
-match_probs = np.zeros((ll_adj.shape[0], rr_adj.shape[0]))
+rng = np.random.default_rng(9999)
 
-currtime = time.time()
-for i in tqdm(range(n_init)):
-    indices_A, indices_B, score, misc = graph_match(
-        ll_adj,
-        rr_adj,
-        AB=lr_adj,
-        BA=rl_adj,
-        rng=rng,
-        n_init=1,
-        partial_match=all_seeds,
+rerun = False
+if rerun:
+    match_probs = np.zeros((ll_adj.shape[0], rr_adj.shape[0]))
+    for i in tqdm(range(n_init)):
+        indices_A, indices_B, score, misc = graph_match(
+            ll_adj,
+            rr_adj,
+            AB=lr_adj,
+            BA=rl_adj,
+            rng=rng,
+            n_init=1,
+            partial_match=all_seeds,
+        )
+        match_probs[indices_A, indices_B] += 1 / n_init
+
+    match_probs_df = pd.DataFrame(
+        data=match_probs, index=left_node_ids, columns=right_node_ids
     )
-    match_probs[indices_A, indices_B] += 1 / n_init
-
-elapsed = time.time() - currtime
+    match_probs_df.to_csv(OUT_PATH / "match_probs.csv")
+else:
+    match_probs_df = pd.read_csv(OUT_PATH / "match_probs.csv", index_col=0)
+    match_probs = match_probs_df.values
 
 #%%
 
@@ -393,7 +333,7 @@ def plot_paired_neurons(left_ids, right_ids):
     colors = [rgb2hex(*color) for color in colors]
     axs = np.empty((n_rows, n_cols), dtype="object")
     for j, (left_id, right_id) in enumerate(zip(left_ids, right_ids)):
-        neurons = [left_id, right_id]
+        neurons = [int(left_id), int(right_id)]
         palette = dict(zip(neurons, colors))
         for i, view in enumerate(views):
             ax = fig.add_subplot(gs[(i, j)], projection="3d")
@@ -416,9 +356,9 @@ def plot_paired_neurons(left_ids, right_ids):
 #%%
 # morphologies for some good matches
 n_show = 7
-best_pair_df = pair_df[pair_df["p_matched"] == 1].sample(
-    n=n_show, replace=False, random_state=rng
-)
+glue('n_show', n_show)
+best_pair_df = pair_df[pair_df["p_matched"] >= 0.999]
+best_pair_df = best_pair_df.sample(n=n_show, replace=False, random_state=rng)
 
 fig, ax = plot_paired_neurons(best_pair_df["skid_left"], best_pair_df["skid_right"])
 
@@ -430,3 +370,9 @@ worst_pair_df = pair_df.sort_values("p_matched").iloc[:n_show]
 fig, ax = plot_paired_neurons(worst_pair_df["skid_left"], worst_pair_df["skid_right"])
 
 gluefig("example_matched_morphologies_bad", fig)
+
+#%%
+elapsed = time.time() - t0
+delta = datetime.timedelta(seconds=elapsed)
+print(f"Script took {delta}")
+print(f"Completed at {datetime.datetime.now()}")
