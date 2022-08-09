@@ -4,6 +4,7 @@
 import datetime
 import logging
 import time
+from unittest import result
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -29,8 +30,11 @@ from pkg.plot import (
     simple_plot_neurons,
     subgraph_palette,
 )
+from scipy.optimize import linear_sum_assignment
 from sklearn.model_selection import KFold, train_test_split
 from tqdm.autonotebook import tqdm
+from scipy.stats import mannwhitneyu, wilcoxon
+
 
 FILENAME = "connectome_seeded"
 
@@ -90,22 +94,12 @@ for annot_name in annot_df["name"]:
     series_ids.append(indicator)
 nodes = pd.concat(series_ids, axis=1, ignore_index=False).fillna(False)
 
-
-# adj_df = pymaid.adjacency_matrix(nodes.index.values)
-# adj_df = pd.DataFrame(
-#     data=adj_df.values.astype(int), index=adj_df.index, columns=adj_df.columns
-# )
-
 #%%
 raw_path = DATA_PATH / "maggot"
 
 paired_nodes = pd.read_csv(raw_path / "nodes.csv", index_col=0)
 
 #%%
-
-
-# %%
-# get_indicator_from_annotation('soma left')
 
 temp_meta = pd.read_csv("bgm/data/maggot/meta_data.csv", index_col=0)
 temp_meta = temp_meta[temp_meta["hemisphere"] != "C"]
@@ -196,20 +190,23 @@ def select_seeds(left_nodes, right_nodes, pairs="all"):
 
 all_seeds = select_seeds(left_nodes, right_nodes)
 
-# from sklearn.cros
 indices = np.arange(len(all_seeds))
 
+n_folds = 10
+glue("n_folds", n_folds)
 
 rerun = False
 if rerun:
     rows = []
-    kfold = KFold(shuffle=True)
-    n_folds = 5
+    kfold = KFold(
+        n_splits=n_folds,
+        shuffle=True,
+        random_state=rng.integers(np.iinfo(np.uint32).max),
+    )
+
     n_seeds_range = [0, 100, 200, 300, 400]
     pbar = tqdm(total=n_folds * len(n_seeds_range) * 2)
     for fold, (indices_train, indices_test) in enumerate(kfold.split(indices)):
-
-        # indices_train, indices_test = train_test_split(indices, test_size=0.2)
 
         test_seeds = all_seeds[indices_test]
         left_nodes_to_check = left_nodes.iloc[test_seeds[:, 0]].index
@@ -279,12 +276,27 @@ sns.lineplot(
 sns.move_legend(ax, loc="lower right", title="Method")
 ax.set(ylabel="Matching accuracy", xlabel="Number of seeds", xticks=n_seeds_range)
 gluefig("accuracy_by_seeds", fig)
-
 #%%
 
+stat_rows = []
+for n_seeds, seed_results in results.groupby("n_seeds"):
+    ratios = []
+    for method, method_results in seed_results.groupby("method"):
+        ratios.append(method_results["match_ratio"])
+    # stat, pvalue = mannwhitneyu(*ratios)
+    stat, pvalue = wilcoxon(*ratios)
+    stat_rows.append({"n_seeds": n_seeds, "pvalue": pvalue, "stat": stat})
+stat_results = pd.DataFrame(stat_rows)
+stat_results
+
+#%%
+n_init = 100
+glue("full_seed_n_init", n_init)
+
+rng = np.random.default_rng(88888)
+match_probs = np.zeros((ll_adj.shape[0], rr_adj.shape[0]))
+
 currtime = time.time()
-match_counts = np.zeros((ll_adj.shape[0], rr_adj.shape[0]))
-n_init = 50
 for i in tqdm(range(n_init)):
     indices_A, indices_B, score, misc = graph_match(
         ll_adj,
@@ -295,46 +307,57 @@ for i in tqdm(range(n_init)):
         n_init=1,
         partial_match=all_seeds,
     )
-    match_counts[indices_A, indices_B] += 1
+    match_probs[indices_A, indices_B] += 1 / n_init
 
 elapsed = time.time() - currtime
 
 #%%
-from scipy.optimize import linear_sum_assignment
 
-row_counts = np.count_nonzero(match_counts, axis=1)
-strong_match_indices = np.where(row_counts == 1)[0]
-strong_match_indices = np.setdiff1d(strong_match_indices, all_seeds[:, 0])
-indices_A, indices_B = linear_sum_assignment(match_counts, maximize=True)
-p_matched = match_counts[indices_A, indices_B] / n_init
-# for row in match_counts:
-#     if np.count_nonzero(row) == 1:
-#         pass
-#     else:
-#         print(np.count_nonzero(row))
+# from the full set of matching probabilities, get the most likely for each
+indices_A, indices_B = linear_sum_assignment(match_probs, maximize=True)
+# these are the matching probabilities for the final matches (if we have to choose one)
+p_matched = match_probs[indices_A, indices_B]
 
-#%%
-
+# resort data accordingly
 left_nodes_sorted = left_nodes.iloc[indices_A].copy()
 right_nodes_sorted = right_nodes.iloc[indices_B].copy()
 left_nodes_sorted["p_matched"] = p_matched
 
-#%%
+# sanity check - this should always be 1
 equal_pairs = left_nodes_sorted["pair"].values == right_nodes_sorted["pair"].values
 real_pairs = (~left_nodes_sorted["pair"].isna().values) & (
     ~right_nodes_sorted["pair"].isna().values
 )
-
 match_ratio = np.mean(equal_pairs[real_pairs])
 print(f"Match ratio = {match_ratio}")
 
 #%%
+# sub select the new pairs only (not seeds)
 new_pairs = (
     left_nodes_sorted["pair"].isna().values & right_nodes_sorted["pair"].isna().values
 )
-new_left_nodes = left_nodes_sorted.loc[new_pairs]
-new_right_nodes = right_nodes_sorted.loc[new_pairs]
 
+# make a dataframe for the new matches
+new_left_nodes = left_nodes_sorted.loc[new_pairs].copy()
+new_left_nodes.index.name = "skid_left"
+new_right_nodes = right_nodes_sorted.loc[new_pairs].copy()
+new_right_nodes.index.name = "skid_right"
+
+pair_df = pd.concat(
+    (
+        new_left_nodes.index.to_series().reset_index(drop=True),
+        new_right_nodes.index.to_series().reset_index(drop=True),
+        new_left_nodes["p_matched"].reset_index(drop=True),
+    ),
+    axis=1,
+)
+# remove anything that never actually got matched (not equal sized graphs)
+pair_df = pair_df[pair_df["p_matched"] > 0]
+
+#%%
+# plot the distribution of matching probabilities
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+sns.histplot(data=pair_df, x="p_matched")
 
 #%%
 
@@ -359,74 +382,51 @@ def draw_box(ax, color="black"):
     ax.add_line(line)
 
 
-colors = [subgraph_palette["LL"], subgraph_palette["RR"]]
-colors = [rgb2hex(*color) for color in colors]
+def plot_paired_neurons(left_ids, right_ids):
+    n_show = len(left_ids)
+    n_cols = n_show
+    n_rows = 3
+    views = (dict(elev=-90, azim=90), dict(elev=0, azim=0), dict(elev=45, azim=45))
+    fig = plt.figure(figsize=(2 * n_cols, 2 * n_rows), constrained_layout=True)
+    gs = plt.GridSpec(n_rows, n_cols, figure=fig, hspace=0, wspace=0)
+    colors = [subgraph_palette["LL"], subgraph_palette["RR"]]
+    colors = [rgb2hex(*color) for color in colors]
+    axs = np.empty((n_rows, n_cols), dtype="object")
+    for j, (left_id, right_id) in enumerate(zip(left_ids, right_ids)):
+        neurons = [left_id, right_id]
+        palette = dict(zip(neurons, colors))
+        for i, view in enumerate(views):
+            ax = fig.add_subplot(gs[(i, j)], projection="3d")
+            axs[(i, j)] = ax
+            simple_plot_neurons(
+                neurons,
+                palette=palette,
+                ax=ax,
+                force_bounds=False,
+                autoscale=True,
+                soma=False,
+                dist=3,
+                lw=1.5,
+                **view,
+            )
+            draw_box(ax, color="lightgrey")
+    return fig, axs
 
-n_show = 15
-n_cols = 5
-n_rows = int(np.ceil(n_show / n_cols))
-fig = plt.figure(figsize=(2 * n_cols, 2 * n_rows), constrained_layout=True)
-gs = plt.GridSpec(n_rows, n_cols, figure=fig, hspace=0, wspace=0)
-axs_shape = (n_rows, n_cols)
-indices = rng.choice(n_show, size=n_show, replace=False)
-for i, index in enumerate(indices):
-    ax_inds = np.unravel_index(i, axs_shape)
-    ax = fig.add_subplot(gs[ax_inds], projection="3d")
-    neurons = [new_left_nodes.index[index], new_right_nodes.index[index]]
-    palette = dict(zip(neurons, colors))
-    simple_plot_neurons(
-        neurons,
-        palette=palette,
-        ax=ax,
-        force_bounds=False,
-        autoscale=True,
-        soma=False,
-        dist=3.5,
-        lw=1.5,
-        elev=0,
-        azim=0,
-    )
-    # ax.set_xlim3d((-4500, 110000))
-    # ax.set_ylim3d((-4500, 110000))
-    draw_box(ax, color="lightgrey")
 
-gluefig("example_matched_morphologies", fig=fig)
-
-# %%
-
+#%%
+# morphologies for some good matches
 n_show = 7
-n_cols = n_show
-n_rows = 3
-views = (dict(elev=-90, azim=90), dict(elev=0, azim=0), dict(elev=45, azim=45))
-fig = plt.figure(figsize=(2 * n_cols, 2 * n_rows), constrained_layout=True)
-gs = plt.GridSpec(n_rows, n_cols, figure=fig, hspace=0, wspace=0)
-axs_shape = (n_rows, n_cols)
+best_pair_df = pair_df[pair_df["p_matched"] == 1].sample(
+    n=n_show, replace=False, random_state=rng
+)
 
-# only select the best matches
-left_choice_index = new_left_nodes[new_left_nodes["p_matched"] == 1].index
-# pick some random ones
-choice_left_ids = rng.choice(left_choice_index, size=n_show, replace=False)
+fig, ax = plot_paired_neurons(best_pair_df["skid_left"], best_pair_df["skid_right"])
 
-for j, choice_left_id in enumerate(choice_left_ids):
-    choice_iloc = new_left_nodes.index.get_loc(choice_left_id)
-    choice_right_id = new_right_nodes.index[choice_iloc]
-    neurons = [choice_left_id, choice_right_id]
-    palette = dict(zip(neurons, colors))
-    for i, view in enumerate(views):
-        # ax_inds = np.unravel_index(i, axs_shape)
-        ax = fig.add_subplot(gs[(i, j)], projection="3d")
-        simple_plot_neurons(
-            neurons,
-            palette=palette,
-            ax=ax,
-            force_bounds=False,
-            autoscale=True,
-            soma=False,
-            dist=3,
-            lw=1.5,
-            **view,
-        )
-        # ax.set_xlim3d((-4500, 110000))
-        # ax.set_ylim3d((-4500, 110000))
-        draw_box(ax, color="lightgrey")
-gluefig("example_matched_morphologies_3view", fig=fig)
+gluefig("example_matched_morphologies_good", fig)
+#%%
+# morphologies for some bad matches
+worst_pair_df = pair_df.sort_values("p_matched").iloc[:n_show]
+
+fig, ax = plot_paired_neurons(worst_pair_df["skid_left"], worst_pair_df["skid_right"])
+
+gluefig("example_matched_morphologies_bad", fig)
