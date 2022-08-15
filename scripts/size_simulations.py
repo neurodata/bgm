@@ -115,6 +115,7 @@ else:
 
 #%%
 
+set_theme(font_scale=1.25)
 
 fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True, constrained_layout=True)
 
@@ -140,3 +141,4 @@ for i, (contra_rho, group_data) in enumerate(results.groupby("contra_rho")):
 
 gluefig("matching_accuracy_size", fig)
 
+#%%

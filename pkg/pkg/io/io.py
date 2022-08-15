@@ -106,6 +106,10 @@ def glue(name, var, filename, figure=False, display=False, form=None):
         var = f"{var:,}"
     elif form == "2.0f%":
         var = f"{var*100:2.0f}"
+    elif form == ".2f":
+        var = f"{var:.2f}"
+    elif isinstance(form, str):
+        var = form.format(x=var)
 
     if form is not None:
         glue(

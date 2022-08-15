@@ -117,7 +117,7 @@ n_seeds_range = [0, 100, 200, 300, 400]
 n_folds = 5
 glue("n_folds", n_folds)
 
-rerun = True
+rerun = False
 if rerun:
     rows = []
     kfold = KFold(
@@ -183,7 +183,7 @@ if rerun:
 else:
     results = pd.read_csv(OUT_PATH / "matching_results.csv", index_col=0)
 #%%
-
+set_theme(font_scale=1)
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 sns.lineplot(
     data=results,
@@ -194,7 +194,8 @@ sns.lineplot(
     style="method",
     dashes=dashes,
 )
-sns.move_legend(ax, loc="lower right", title="Method")
+sns.move_legend(ax, loc="lower right", title="Method", frameon=True)
+ax.yaxis.set_major_locator(plt.MaxNLocator(5))
 ax.set(ylabel="Matching accuracy", xlabel="Number of seeds", xticks=n_seeds_range)
 gluefig("accuracy_by_seeds", fig)
 

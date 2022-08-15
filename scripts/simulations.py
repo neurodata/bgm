@@ -15,7 +15,7 @@ from pkg.io import glue as default_glue
 from pkg.io import savefig
 from pkg.match import GraphMatchSolver
 from pkg.plot import method_palette, set_theme
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 DISPLAY_FIGS = True
 
@@ -162,6 +162,171 @@ ax.set_ylabel("Matching accuracy")
 ax.set_xlabel("Contralateral edge correlation")
 sns.move_legend(ax, loc="upper left", title="Method", frameon=True)
 gluefig("match_ratio_by_contra_rho", fig)
+
+#%%
+
+
+# permute one side as appropriate
+
+# B = B[perm][:, perm]
+# AB = AB[:, perm]
+# BA = BA[perm, :]
+
+from graspologic.match import graph_match
+
+
+def compute_edge_disagreements(perm):
+    disagreements = np.count_nonzero(A - B[perm][:, perm]) + np.count_nonzero(
+        AB[:, perm] - BA[perm]
+    )
+    return disagreements
+
+
+def compute_contra_edge_disagreements(perm):
+    disagreements = np.count_nonzero(AB[:, perm] - BA[perm])
+    return disagreements
+
+
+contra_rho = 0.1
+zeros = np.zeros((n_side, n_side))
+index = np.arange(n_side)
+methods = ["True", "GM", "BGM", "CGM"]
+
+rows = []
+for i in range(n_sims):
+
+    A, B = er_corr(n_side, ipsi_p, ipsi_rho, directed=True)
+    AB, BA = er_corr(n_side, contra_p, contra_rho, directed=True)
+
+    # rand_perm = rng.permutation(n_side)
+    _, gm_perm, _, _ = graph_match(A, B)
+    _, bgm_perm, _, _ = graph_match(A, B, AB, BA)
+    _, cgm_perm, _, _ = graph_match(zeros, zeros, AB, BA)
+
+    perms = [index, gm_perm, bgm_perm, cgm_perm]
+
+    for perm, method in zip(perms, methods):
+        total_score = compute_edge_disagreements(perm)
+        contra_score = compute_contra_edge_disagreements(perm)
+        rows.append(
+            {
+                "sim": i,
+                "method": method,
+                "total_score": total_score,
+                "contra_score": contra_score,
+            }
+        )
+
+results = pd.DataFrame(rows)
+
+
+#%%
+set_theme(font_scale=1.25)
+fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+palette = method_palette.copy()
+colors = sns.color_palette("colorblind")
+palette["True"] = colors[2]
+palette["CGM"] = colors[4]
+sns.barplot(data=results, x="method", y="contra_score", ax=ax, palette=palette)
+pad = 2
+for i, (group, group_data) in enumerate(results.groupby("method", sort=False)):
+    y = group_data["contra_score"].mean()
+    ax.text(i, y + pad, f"{y:.0f}", ha="center", va="bottom")
+ax.set(ylabel="# contralateral\nedge disagreements", xlabel="Method")
+gluefig("edge_disagreements", fig)
+
+#%%
+for method, method_results in results.groupby("method"):
+    mean = method_results["contra_score"].mean()
+    glue(f"{method}_contra_disagreements", mean, form="{x:.0f}")
+
+#%%
+
+fig, axs = plt.subplots(2, 3, figsize=(12, 8), constrained_layout=True)
+from graspologic.plot import heatmap
+
+set_theme(font_scale=1.6)
+
+heatmap_kws = dict(cbar=False)
+ax = axs[0, 0]
+heatmap(AB, ax=ax, cmap="RdBu_r", **heatmap_kws)
+ax.set_title("$A_{LR}$")
+ax.set_ylabel("True\nalignment", rotation=0, ha="right", va="center")
+
+ax = axs[0, 1]
+heatmap(BA, ax=ax, cmap="RdBu", **heatmap_kws)
+ax.set_title("$A_{RL}$")
+
+ax = axs[0, 2]
+heatmap(AB - BA, ax=ax, **heatmap_kws)
+diffs = np.count_nonzero(AB - BA)
+ax.set_title(r"$A_{LR} - A_{RL}$" + f"\n{diffs} disagreements")
+
+ax = axs[1, 0]
+ax.set_ylabel("Estimated\nalignment", rotation=0, ha="right", va="center")
+
+ax = axs[1, 1]
+heatmap(BA[cgm_perm], cmap="RdBu", ax=ax, **heatmap_kws)
+ax.set_title("$P^{*}A_{RL}$")
+
+ax = axs[1, 2]
+heatmap(AB - BA[cgm_perm], ax=ax, **heatmap_kws)
+diffs = np.count_nonzero(AB - BA[cgm_perm])
+ax.set_title(r"$A_{LR} - P^{*}A_{RL}$" + f"\n{diffs} disagreements")
+
+for ax in axs.flat:
+    ax.spines[["left", "right", "top", "bottom"]].set_visible(True)
+    ax.spines[["left", "right", "top", "bottom"]].set_color("grey")
+axs[1, 0].set(xticks=[], yticks=[])
+axs[1, 0].spines[["left", "right", "top", "bottom"]].set_visible(False)
+
+fig.set_facecolor("w")
+
+gluefig("phantom_alighment_demo", fig)
+
+#%%
+
+zeros = np.zeros((n_side, n_side))
+index = np.arange(n_side)
+# methods = ["True", "GM", "BGM", "CGM"]
+methods = ["True", "CGM"]
+n_sims = 1000
+rows = []
+pbar = tqdm(total=n_sims * 10 * len(methods), leave=False)
+for contra_rho in np.linspace(0, 1, 11):
+    for i in range(n_sims):
+
+        # A, B = er_corr(n_side, ipsi_p, ipsi_rho, directed=True)
+        AB, BA = er_corr(n_side, contra_p, contra_rho, directed=True)
+
+        # rand_perm = rng.permutation(n_side)
+        # _, gm_perm, _, _ = graph_match(A, B)
+        # _, bgm_perm, _, _ = graph_match(A, B, AB, BA)
+        _, cgm_perm, _, _ = graph_match(zeros, zeros, AB, BA)
+
+        perms = [index, cgm_perm]
+
+        for perm, method in zip(perms, methods):
+            total_score = compute_edge_disagreements(perm)
+            contra_score = compute_contra_edge_disagreements(perm)
+            rows.append(
+                {
+                    "sim": i,
+                    "method": method,
+                    "total_score": total_score,
+                    "contra_score": contra_score,
+                }
+            )
+            pbar.update(1)
+
+results = pd.DataFrame(rows)
+
+#%%
+fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+x = results[results["method"] == "True"]["contra_score"].values
+y = results[results["method"] == "CGM"]["contra_score"].values
+sns.scatterplot(x=x, y=y, ax=ax, alpha=0.01)
+ax.plot([0, 50], [0, 50])
 
 #%% [markdown]
 # ## End

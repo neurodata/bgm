@@ -47,6 +47,8 @@ rng = np.random.default_rng(8888)
 # ## Load processed data, run matching experiment
 #%%
 
+from scipy.stats import pearsonr
+
 
 def compute_contralateral_ratio(A, B, AB, BA, agg="nonzero"):
     if agg == "nonzero":
@@ -60,7 +62,7 @@ def compute_contralateral_ratio(A, B, AB, BA, agg="nonzero"):
     return (m_AB + m_BA) / (m_A + m_B + m_AB + m_BA)
 
 
-RERUN_SIMS = True
+RERUN_SIMS = False
 datasets = ["maggot_subset", "male_chem", "herm_chem", "specimen_148", "specimen_107"]
 
 n_sims = 50
@@ -80,6 +82,10 @@ for dataset in datasets:
     B = adj[right_inds][:, right_inds]
     AB = adj[left_inds][:, right_inds]
     BA = adj[right_inds][:, left_inds]
+    ipsi_corr, _ = pearsonr(A.ravel(), B.ravel())
+    glue(f"{dataset}_ipsi_corr", ipsi_corr, form=".2f")
+    contra_corr, _ = pearsonr(AB.ravel(), BA.ravel())
+    glue(f"{dataset}_contra_corr", contra_corr, form=".2f")
 
     contra_edge_ratio = compute_contralateral_ratio(A, B, AB, BA, agg="nonzero")
     glue(f"{dataset}_contra_edge_ratio", contra_edge_ratio, form="2.0f%")
@@ -124,6 +130,8 @@ for dataset in datasets:
 #%% [markdown]
 # ## Plot the matching accuracy showing each random seed
 #%%
+
+from scipy.stats import mannwhitneyu
 
 set_theme(font_scale=1.2)
 scale = 5
@@ -181,10 +189,9 @@ for i, (dataset, results) in enumerate(results_by_dataset.items()):
     gm_results = results[results["method"] == "GM"]
     bgm_results = results[results["method"] == "BGM"]
 
-    stat, pvalue = wilcoxon(
+    stat, pvalue = mannwhitneyu(
         gm_results["match_ratio"].values,
         bgm_results["match_ratio"].values,
-        mode="approx",
     )
     glue(f"{dataset}_match_ratio_pvalue", pvalue, form="pvalue")
     pvalues[dataset] = pvalue
