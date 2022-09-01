@@ -252,6 +252,7 @@ else:
     match_probs_df = pd.read_csv(OUT_PATH / "match_probs.csv", index_col=0)
     match_probs = match_probs_df.values
 
+
 #%%
 
 # from the full set of matching probabilities, get the most likely for each
@@ -293,8 +294,10 @@ pair_df = pd.concat(
     axis=1,
 )
 # remove anything that never actually got matched (not equal sized graphs)
-pair_df = pair_df[pair_df["p_matched"] > 0]
-
+pair_df = pair_df[pair_df["p_matched"] > 0].copy()
+pair_df = pair_df.sort_values("p_matched", ascending=False).reset_index(drop=True)
+pair_df.to_csv(OUT_PATH / "pair_predictions.csv")
+pair_df
 #%%
 # plot the distribution of matching probabilities
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
@@ -323,17 +326,37 @@ def draw_box(ax, color="black"):
     ax.add_line(line)
 
 
-def plot_paired_neurons(left_ids, right_ids):
+volume_names = ["cns"]
+import navis
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+def plot_paired_neurons(left_ids, right_ids, dist=3):
     n_show = len(left_ids)
-    n_cols = n_show
+    n_cols = n_show + 1
     n_rows = 3
-    views = (dict(elev=-90, azim=90), dict(elev=0, azim=0), dict(elev=45, azim=45))
+    # views = (dict(elev=-90, azim=90), dict(elev=0, azim=0), dict(elev=45, azim=45))
+    views = (dict(elev=0, azim=-90), dict(elev=90, azim=-90), dict(elev=-45, azim=90))
     fig = plt.figure(figsize=(2 * n_cols, 2 * n_rows), constrained_layout=True)
     gs = plt.GridSpec(n_rows, n_cols, figure=fig, hspace=0, wspace=0)
     colors = [subgraph_palette["LL"], subgraph_palette["RR"]]
     colors = [rgb2hex(*color) for color in colors]
     axs = np.empty((n_rows, n_cols), dtype="object")
+    j = 0
+    for i, view in enumerate(views):
+        ax = fig.add_subplot(gs[(i, j)], projection="3d")
+        axs[(i, j)] = ax
+        volumes = [pymaid.get_volume(v) for v in volume_names]
+        navis.plot2d(volumes, ax=ax, method="3d", autoscale=True)
+        ax.azim = view["azim"]
+        ax.elev = view["elev"]
+        ax.dist = dist
+        for c in ax.collections:
+            if isinstance(c, Poly3DCollection):
+                c.set_alpha(0.02)
+
     for j, (left_id, right_id) in enumerate(zip(left_ids, right_ids)):
+        j += 1
         neurons = [int(left_id), int(right_id)]
         palette = dict(zip(neurons, colors))
         for i, view in enumerate(views):
@@ -346,7 +369,7 @@ def plot_paired_neurons(left_ids, right_ids):
                 force_bounds=False,
                 autoscale=True,
                 soma=False,
-                dist=3,
+                dist=dist,
                 lw=1.5,
                 **view,
             )
@@ -355,20 +378,224 @@ def plot_paired_neurons(left_ids, right_ids):
 
 
 #%%
+
+import matplotlib.transforms as mtrans
+
+
+def set_border(ax):
+    ax.set(xticks=[], yticks=[])
+    ax.spines[["left", "right", "top", "bottom"]].set_visible(False)
+    # ax.spines[["left", "right", "top", "bottom"]].set_color("lightgrey")
+
+
+def draw_axes_dividers(fig, axs, axis="x"):
+    # Adapted from
+    # REF: https://stackoverflow.com/questions/26084231/draw-a-separator-or-lines-between-subplots
+    r = fig.canvas.get_renderer()
+
+    def get_bbox(ax):
+        return ax.get_tightbbox(r).transformed(fig.transFigure.inverted())
+
+    bboxes = np.array(list(map(get_bbox, axs.flat)), mtrans.Bbox).reshape(axs.shape)
+
+    if axis == "y":
+        # Get the minimum and maximum extent, get the coordinate half-way between those
+        ymax = (
+            np.array(list(map(lambda b: b.y1, bboxes.flat)))
+            .reshape(axs.shape)
+            .max(axis=1)
+        )
+        ymin = (
+            np.array(list(map(lambda b: b.y0, bboxes.flat)))
+            .reshape(axs.shape)
+            .min(axis=1)
+        )
+        ys = np.c_[ymax[1:], ymin[:-1]].mean(axis=1)
+
+        # Draw a horizontal lines at those coordinates
+        for y in ys:
+            line = plt.Line2D(
+                [0, 1], [y, y], transform=fig.transFigure, color="lightgrey"
+            )
+            fig.add_artist(line)
+    elif axis == "x":
+        xmax = (
+            np.array(list(map(lambda b: b.x1, bboxes.flat)))
+            .reshape(axs.shape)
+            .max(axis=0)
+        )
+        xmin = (
+            np.array(list(map(lambda b: b.x0, bboxes.flat)))
+            .reshape(axs.shape)
+            .min(axis=0)
+        )
+        xs = np.c_[xmax[1:], xmin[:-1]].mean(axis=1)
+
+        # Draw a vertical lines at those coordinates
+        for x in xs:
+            line = plt.Line2D(
+                [x, x], [0, 1], transform=fig.transFigure, color="lightgrey"
+            )
+            fig.add_artist(line)
+
+
+def draw_compass_rose(labels, ax):
+    ax.set_xlim((0, 1))
+    ax.set_ylim((0, 1))
+    outs = [(0.5, 0.75), (0.5, 0.25), (0.25, 0.5), (0.75, 0.5)]
+    h_alignments = ["center", "center", "right", "left"]
+    v_alignments = ["bottom", "top", "center", "center"]
+    for i, (out, label) in enumerate(zip(outs, labels)):
+        ax.annotate(
+            "",
+            out,
+            xytext=(0.5, 0.5),
+            textcoords="data",
+            arrowprops=dict(arrowstyle="-|>", linewidth=3),
+        )
+        ax.text(*out, label, ha=h_alignments[i], va=v_alignments[i])
+
+
+def plot_neuron_pair_grid(left_ids, right_ids, title=""):
+    n_show = len(left_ids)
+
+    views = (("-x", "-y"), ("-x", "-z"), ("z", "-y"))
+    n_views = len(views)
+    n_col = n_show + 2
+    size = 2
+    fig, axs = plt.subplots(
+        n_views,
+        n_col,
+        figsize=(size * n_col, size * n_views),
+        # gridspec_kw=dict(hspace=0, wspace=0),
+        # constrained_layout=True
+    )
+    volume = pymaid.get_volume("cns")
+
+    colors = sns.color_palette("tab20")
+
+    for i in range(n_views):
+        ax = axs[i, 0]
+        set_border(ax)
+
+    for i, view in enumerate(views):
+        ax = axs[i, 1]
+        navis.plot2d(
+            volume,
+            method="2d",
+            view=view,
+            soma=True,
+            volume_outlines=True,
+            ax=ax,
+        )
+        ax.margins(0.05)
+        ax.axis("equal")
+        set_border(ax)
+
+    for j, (left_id, right_id) in enumerate(zip(left_ids, right_ids)):
+        neuron_ids = [left_id, right_id]
+        neurons = pymaid.get_neurons(neuron_ids)
+        for i, view in enumerate(views):
+            ax = axs[i, j + 2]
+            navis.plot2d(
+                neurons,
+                method="2d",
+                view=view,
+                colors=[colors[j * 2], colors[j * 2 + 1]],
+                alpha=1,
+                soma=True,
+                ax=ax,
+                autoscale=True,
+                linewidth=1,
+            )
+            ax.margins(0.05)
+            ax.axis("equal")
+            set_border(ax)
+
+            ax = axs[i, 1]
+            navis.plot2d(
+                neurons,
+                method="2d",
+                view=view,
+                colors=[colors[j * 2], colors[j * 2 + 1]],
+                alpha=1,
+                soma=True,
+                ax=ax,
+                autoscale=True,
+            )
+            # ax.margins(0.02)
+            # ax.axis("square")
+
+            # ax.autoscale(enable=False)
+            # navis.plot2d(
+            #     volume,
+            #     method="2d",
+            #     view=view,
+            #     soma=True,
+            #     volume_outlines=True,
+            #     ax=ax,
+            #     autoscale=False,
+            # )
+            # ax.autoscale(enable=True)
+
+    for ax in axs.flat:
+        ax.margins(0.02)
+
+    fig.tight_layout()
+    draw_axes_dividers(fig, axs, "x")
+    draw_axes_dividers(fig, axs, "y")
+
+    axs[1, 0].set_ylabel("View", fontsize="x-large")
+
+    draw_compass_rose(["D", "V", "L", "R"], axs[0, 0])
+    draw_compass_rose(["A", "P", "L", "R"], axs[1, 0])
+    draw_compass_rose(["D", "V", "A", "P"], axs[2, 0])
+
+    ax = axs[2, 1]
+    ax.annotate(
+        "CNS boundary",
+        (0.5, 0.3),
+        xytext=(0, -40),
+        xycoords="axes fraction",
+        textcoords="offset points",
+        ha="center",
+        arrowprops=dict(arrowstyle="->", linewidth=2),
+    )
+
+    axs[0, 1].set_title("All")
+    for j in range(n_show):
+        axs[0, j + 2].set_title(f"Match {j + 1}")
+
+    fig.text(0.5, 1.02, title, fontsize="x-large", ha="center", va="bottom")
+    fig.set_facecolor("w")
+    return fig, ax
+
+
+#%%
+rng = np.random.default_rng(9)
+
 # morphologies for some good matches
-n_show = 7
-glue('n_show', n_show)
+n_show = 6
+glue("n_show", n_show)
 best_pair_df = pair_df[pair_df["p_matched"] >= 0.999]
 best_pair_df = best_pair_df.sample(n=n_show, replace=False, random_state=rng)
 
-fig, ax = plot_paired_neurons(best_pair_df["skid_left"], best_pair_df["skid_right"])
+fig, ax = plot_neuron_pair_grid(
+    best_pair_df["skid_left"],
+    best_pair_df["skid_right"],
+    title="Neuron matches (high confidence)",
+)
 
 gluefig("example_matched_morphologies_good", fig)
 #%%
 # morphologies for some bad matches
 worst_pair_df = pair_df.sort_values("p_matched").iloc[:n_show]
 
-fig, ax = plot_paired_neurons(worst_pair_df["skid_left"], worst_pair_df["skid_right"])
+fig, ax = plot_neuron_pair_grid(
+    worst_pair_df["skid_left"],
+    worst_pair_df["skid_right"],
+    title="Neuron matches (low confidence)",
+)
 
 gluefig("example_matched_morphologies_bad", fig)
 

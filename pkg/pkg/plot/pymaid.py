@@ -4,7 +4,7 @@ import pymaid
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import navis
 
-volume_names = ["PS_Neuropil_manual"]
+volume_names = ["cns"]
 
 
 def rgb2hex(r, g, b):
@@ -54,9 +54,6 @@ def simple_plot_neurons(
             palette[key] = rgb2hex(*value)
 
     # neurons = [pymaid.get_neuron(n) for n in neuron_ids]
-    # if volume_names is not None:
-    # volumes = [pymaid.get_volume(v) for v in volume_names]
-    # plot_volumes(volumes)
 
     colors = np.vectorize(palette.get)(neuron_ids)
 
@@ -71,6 +68,7 @@ def simple_plot_neurons(
         soma=soma,
         **kwargs,
     )
+
     # plot_volumes(volumes, ax)
     if plot_mode == "3d":
         ax.azim = azim
@@ -83,11 +81,27 @@ def simple_plot_neurons(
     if force_bounds:
         ax.set_xlim3d((-4500, 110000))
         ax.set_ylim3d((-4500, 110000))
+
+    if autoscale:
+        ax.autoscale()
+        xlims = ax.get_xlim3d()
+        ylims = ax.get_ylim3d()
+        zlims = ax.get_zlim3d()
+
+    if volume_names is not None:
+        volumes = [pymaid.get_volume(v) for v in volume_names]
+        plot_volumes(volumes, ax)
+        ax.set_xlim3d(xlims)
+        ax.set_ylim3d(ylims)
+        ax.set_zlim3d(zlims)
+
     return ax
 
 
 def plot_volumes(volumes, ax):
+    ax.autoscale(enable=False)
     navis.plot2d(volumes, ax=ax, method="3d", autoscale=False)
+    ax.autoscale(enable=True)
     for c in ax.collections:
         if isinstance(c, Poly3DCollection):
             c.set_alpha(0.02)

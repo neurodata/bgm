@@ -3,8 +3,9 @@
 
 #%%
 import datetime
-from re import S
+from secrets import choice
 import time
+from tkinter import N
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,120 +42,27 @@ def gluefig(name, fig, **kwargs):
 t0 = time.time()
 rng = np.random.default_rng(8888)
 
+
 #%% [markdown]
 # ## Load processed data, run matching experiment
 #%%
 
 
-def remove_edges(adjacency, effect_size=100, rng=None, max_tries=None):
-    if rng is None:
-        rng = np.random.default_rng()
-
-    n_nonzero = np.count_nonzero(adjacency)
-    if effect_size > n_nonzero:
-        return None
-
-    row_inds, col_inds = np.nonzero(adjacency)
-
-    select_edges = rng.choice(len(row_inds), size=effect_size, replace=False)
-    select_row_inds = row_inds[select_edges]
-    select_col_inds = col_inds[select_edges]
-    adjacency[select_row_inds, select_col_inds] = 0
-    return adjacency
-
-
-# TODO
-# @jit(nopython=True)
-# https://numba-how-to.readthedocs.io/en/latest/numpy.html
-
-# TODO add an induced option
-# TODO deal with max number of edges properly
-# TODO put down edges all at once rather than this silly thing
-def add_edges(adjacency, effect_size=100, rng=None, max_tries=None):
-    if rng is None:
-        rng = np.random.default_rng()
-
-    n_source = adjacency.shape[0]
-    n_target = adjacency.shape[1]
-    n_possible = n_source * n_target
-    if effect_size > n_possible:  # technicall should be - n if on main diagonal
-        return
-
-    n_edges_added = 0
-    tries = 0
-    while n_edges_added < effect_size and tries < max_tries:
-        i = rng.integers(n_source)
-        j = rng.integers(n_target)
-        tries += 1
-        if i != j and adjacency[i, j] == 0:
-            adjacency[i, j] = 1
-            n_edges_added += 1
-
-    if tries == max_tries and effect_size != 0:
-        msg = (
-            "Maximum number of tries reached when adding edges, number added was"
-            " less than specified."
-        )
-        raise UserWarning(msg)
-
-    return adjacency
-
-
-def shuffle_edges(adjacency, effect_size=100, rng=None, max_tries=None):
-    if rng is None:
-        rng = np.random.default_rng()
-
-    adjacency = remove_edges(
-        adjacency, effect_size=effect_size, rng=rng, max_tries=max_tries
-    )
-
-    if adjacency is None:
-        return
-
-    adjacency = add_edges(
-        adjacency, effect_size=effect_size, rng=rng, max_tries=max_tries
-    )
-
-    return adjacency
-
-
-def shuffle_edges(adjacency, effect_size=100, rng=None, max_tries=None):
+def shuffle_incident_edges(adjacency, choice_inds, rng=None):
     adjacency = adjacency.copy()
-
-    if max_tries is None:
-        max_tries = effect_size * 1000
+    n = adjacency.shape[0]
 
     if rng is None:
         rng = np.random.default_rng()
 
-    n_nonzero = np.count_nonzero(adjacency)
-    if effect_size > n_nonzero:
-        raise UserWarning("Big effect size")
+    for ind in choice_inds:
+        # permute the incident row/outgoing connections
+        perm = rng.permutation(n)
+        adjacency[ind, :] = adjacency[ind, :][perm]
 
-    row_inds, col_inds = np.nonzero(adjacency)
-
-    select_edges = rng.choice(len(row_inds), size=effect_size, replace=False)
-    select_row_inds = row_inds[select_edges]
-    select_col_inds = col_inds[select_edges]
-    edge_weights = list(adjacency[select_row_inds, select_col_inds])
-    adjacency[select_row_inds, select_col_inds] = 0
-
-    n_source = adjacency.shape[0]
-    n_target = adjacency.shape[1]
-    n_possible = n_source * n_target
-    if effect_size > n_possible:  # technicall should be - n if on main diagonal
-        raise UserWarning("Big effect size")
-        # return None
-
-    n_edges_added = 0
-    tries = 0
-    while n_edges_added < effect_size and tries < max_tries:
-        i = rng.integers(n_source)
-        j = rng.integers(n_target)
-        tries += 1
-        if i != j and adjacency[i, j] == 0:
-            adjacency[i, j] = edge_weights.pop()
-            n_edges_added += 1
+        # permute the incident column/incoming connections
+        perm = rng.permutation(n)
+        adjacency[:, ind] = adjacency[:, ind][perm]
 
     return adjacency
 
@@ -163,92 +71,124 @@ def shuffle_edges(adjacency, effect_size=100, rng=None, max_tries=None):
 
 from graspologic.match import graph_match
 
-RERUN_SIMS = True
-datasets = ["male_chem", "herm_chem", "specimen_148", "specimen_107"]
-
-n_sims = 100
+RERUN_SIMS = False
+datasets = ["specimen_107", "specimen_148", "herm_chem", "male_chem", "maggot_subset"]
+n_sims = 50
 glue("n_initializations", n_sims)
 
-p_shuffles = np.linspace(0, 0.9, 10)  # [0, 0.25, 0.5, 0.75]
-contra_weight_ratios = {}
-results_by_dataset = {}
-
+p_shuffles = np.linspace(0, 0.25, 6)  # [0, 0.25, 0.5, 0.75]
 
 rows = []
-with tqdm(total=len(datasets) * len(p_shuffles) * n_sims * 2) as pbar:
-    for dataset in datasets:
-        adj, nodes = load_split_connectome(dataset)
-        n_nodes = len(nodes)
+if RERUN_SIMS:
+    with tqdm(total=len(datasets) * len(p_shuffles) * n_sims * 2) as pbar:
+        for dataset in datasets:
+            adj, nodes = load_split_connectome(dataset)
+            left_inds, right_inds = get_hemisphere_indices(nodes)
+            n_nodes = len(nodes)
+            A = adj[left_inds][:, left_inds]
+            B = adj[right_inds][:, right_inds]
+            AB = adj[left_inds][:, right_inds]
+            BA = adj[right_inds][:, left_inds]
+            n_side = A.shape[0]
+            for p_shuffle in p_shuffles:
+                n_shuffle = int(np.floor(n_side * p_shuffle))
+                p_shuffle = n_shuffle / n_side
+                for sim in range(n_sims):
+                    choice_inds = rng.choice(n_side, size=n_shuffle, replace=False)
+                    non_choice_inds = np.setdiff1d(np.arange(n_side), choice_inds)
 
-        left_inds, right_inds = get_hemisphere_indices(nodes)
-        A = adj[left_inds][:, left_inds]
-        n_edges_ipsi = np.count_nonzero(A)
-        AB = adj[left_inds][:, right_inds]
-        n_edges_contra = np.count_nonzero(AB)
+                    A_perturbed = shuffle_incident_edges(A, choice_inds, rng=rng)
+                    B_perturbed = shuffle_incident_edges(B, choice_inds, rng=rng)
+                    AB_perturbed = shuffle_incident_edges(AB, choice_inds, rng=rng)
+                    BA_perturbed = shuffle_incident_edges(BA, choice_inds, rng=rng)
 
-        n_side = A.shape[0]
+                    for method in ["GM", "BGM"]:
+                        run_start = time.time()
+                        if method == "GM":
+                            # solver = GraphMatchSolver(A, B, rng=seed)
+                            indices_A, indices_B, score, misc = graph_match(
+                                A_perturbed, B_perturbed, rng=rng
+                            )
+                        elif method == "BGM":
+                            # solver = GraphMatchSolver(A, B, AB=AB, BA=BA, rng=seed)
+                            indices_A, indices_B, score, misc = graph_match(
+                                A_perturbed,
+                                B_perturbed,
+                                AB=AB_perturbed,
+                                BA=BA_perturbed,
+                                rng=rng,
+                            )
 
-        # B = adj[right_inds][:, right_inds]
-        # BA = adj[right_inds][:, left_inds]
-        for p_shuffle in p_shuffles:
-            # for p_shuffle_contra in p_shuffles:
-            effect_size_ipsi = int(np.floor(p_shuffle * n_edges_ipsi))
-            B = shuffle_edges(A, effect_size=effect_size_ipsi, rng=rng)
+                        elapsed = time.time() - run_start
+                        match_ratio_full = (indices_B == np.arange(n_side)).mean()
 
-            effect_size_contra = int(np.floor(p_shuffle * n_edges_contra))
-            BA = shuffle_edges(AB, effect_size=effect_size_contra, rng=rng)
+                        match_ratio = (indices_B == np.arange(n_side))[
+                            non_choice_inds
+                        ].mean()
 
-            seeds = rng.integers(np.iinfo(np.uint32).max, size=n_sims)
-
-            for sim, seed in enumerate(seeds):
-                for method in ["GM", "BGM"]:
-                    run_start = time.time()
-                    if method == "GM":
-                        # solver = GraphMatchSolver(A, B, rng=seed)
-                        indices_A, indices_B, score, misc = graph_match(A, B, rng=seed)
-                    elif method == "BGM":
-                        # solver = GraphMatchSolver(A, B, AB=AB, BA=BA, rng=seed)
-                        indices_A, indices_B, score, misc = graph_match(
-                            A, B, AB=AB, BA=BA, rng=seed
+                        rows.append(
+                            {
+                                "match_ratio": match_ratio,
+                                "match_ratio_full": match_ratio_full,
+                                "method": method,
+                                "elapsed": elapsed,
+                                "converged": misc[0]["converged"],
+                                "n_iter": misc[0]["n_iter"],
+                                "score": score,
+                                "dataset": dataset,
+                                "p_shuffle": p_shuffle,
+                                "n_shuffle": n_shuffle,
+                                "sim": sim,
+                            }
                         )
-                    elapsed = time.time() - run_start
-                    match_ratio = (indices_B == np.arange(n_side)).mean()
-                    rows.append(
-                        {
-                            "match_ratio": match_ratio,
-                            "sim": sim,
-                            "method": method,
-                            "seed": seed,
-                            "elapsed": elapsed,
-                            "converged": misc[0]["converged"],
-                            "n_iter": misc[0]["n_iter"],
-                            "score": score,
-                            "dataset": dataset,
-                            "p_shuffle": p_shuffle
-                            # "p_shuffle_ipsi": p_shuffle_ipsi,
-                            # "p_shuffle_contra": p_shuffle_contra,
-                        }
-                    )
-                    pbar.update(1)
+                        pbar.update(1)
 
-    results = pd.DataFrame(rows)
-    results.to_csv(OUT_PATH / "match_results.csv")
-
-    # else:
-    #     results = pd.read_csv(OUT_PATH / f"{dataset}_match_results.csv", index_col=0)
+        results = pd.DataFrame(rows)
+        results.to_csv(OUT_PATH / "match_results.csv")
+else:
+    results = pd.read_csv(OUT_PATH / "match_results.csv", index_col=0)
 
 #%%
 
+from pkg.plot import dashes
+
 set_theme(font_scale=1)
 
-fig, axs = plt.subplots(2, 3, figsize=(15, 10))
+fig, axs = plt.subplots(1, 5, figsize=(15, 5), constrained_layout=True)
+
+nice_dataset_map = {
+    "herm_chem": "C. elegans\nhermaphrodite",
+    "male_chem": "C. elegans\nmale",
+    "maggot": "Maggot",
+    "maggot_subset": "D. melanogaster\n larva subset",
+    "specimen_107": "P. pacificus\npharynx 1",
+    "specimen_148": "P. pacificus\npharynx 2",
+}
 
 for i, dataset in enumerate(datasets):
     dataset_results = results[results["dataset"] == dataset]
     ax = axs.flat[i]
     sns.lineplot(
-        data=dataset_results, x="p_shuffle", y="match_ratio", hue="method", ax=ax
+        data=dataset_results,
+        x="p_shuffle",
+        y="match_ratio",
+        hue="method",
+        palette=method_palette,
+        style="method",
+        dashes=dashes,
+        ax=ax,
     )
+    ax.set_title(nice_dataset_map[dataset])
+    ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(5))
+    ax.set_xlabel('Proportion of\nnodes unmatched')
+    if i > 0:
+        ax.get_legend().remove()
+        ax.set_ylabel("")
+    else:
+        ax.set_ylabel("Matching accuracy\n(matchable nodes only)")
+        sns.move_legend(ax, "upper right", frameon=True, title="Method")
+gluefig("unmatchable_accuracy", fig)
 
 
 #%%

@@ -3,8 +3,7 @@
 
 #%%
 import datetime
-from itertools import groupby
-from select import select
+
 import time
 
 import matplotlib as mpl
@@ -16,7 +15,6 @@ from pkg.data import load_split_connectome
 from pkg.io import OUT_PATH
 from pkg.io import glue as default_glue
 from pkg.io import savefig
-from pkg.match import GraphMatchSolver
 from pkg.plot import matched_stripplot, method_palette, set_theme
 from pkg.utils import get_hemisphere_indices
 from scipy.stats import wilcoxon
@@ -101,7 +99,7 @@ def select_subgraph(adjs, source_inds, target_inds):
     return new_adjs
 
 
-RERUN_SIMS = True
+RERUN_SIMS = False
 datasets = ["male", "herm"]
 
 n_sims = 10
@@ -185,6 +183,26 @@ else:
 
 # %%
 
+
+def draw_significance(ax, pvalue, x, xdist, y=1.02, ydist=0.03):
+    if pvalue < 0.0005:
+        text = "***"
+    elif pvalue < 0.005:
+        text = "**"
+    elif pvalue < 0.05:
+        text = "*"
+    else:
+        text = ""
+    if text != "":
+        ax.plot(
+            [x - xdist, x - xdist, x + xdist, x + xdist],
+            [y, y + ydist, y + ydist, y],
+            color="dimgrey",
+            clip_on=False,
+        )
+        ax.text(x, y, text, ha="center", va="bottom", fontsize="large")
+
+
 grouper = results.groupby(["chem", "elec", "ipsi", "contra"])
 sort_order = grouper["match_ratio"].mean().sort_values()
 sort_order = sort_order.to_frame()
@@ -199,6 +217,7 @@ for key, inds in grouper.groups.items():
 results = results.sort_values("sorter")
 
 from giskard.plot import upset_catplot
+from scipy.stats import mannwhitneyu
 
 set_theme()
 
@@ -206,9 +225,9 @@ fig, axs = plt.subplots(
     1,
     2,
     figsize=(12, 6),
-    sharey=True,
+    sharey=False,
     constrained_layout=True,
-    gridspec_kw=dict(wspace=0.2),
+    gridspec_kw=dict(wspace=0.12),
 )
 category_name_map = {
     "chem": "Chemical",
@@ -222,6 +241,7 @@ nice_dataset_map = {
 }
 for i, (dataset, data_results) in enumerate(results.groupby("dataset", sort=False)):
     ax = axs.flat[i]
+
     uc = upset_catplot(
         data=data_results,
         x=["chem", "elec", "ipsi", "contra"],
@@ -240,17 +260,38 @@ for i, (dataset, data_results) in enumerate(results.groupby("dataset", sort=Fals
     else:
         ax.get_legend().remove()
     ax.set(ylabel="Matching accuracy", title=nice_dataset_map[dataset])
+    ax.yaxis.set_major_locator(plt.MaxNLocator(4))
+
+    for i, (combo, combo_results) in enumerate(
+        data_results.groupby("layer", sort=False)
+    ):
+        ratios = []
+        for method, method_results in combo_results.groupby("method"):
+            ratios.append(method_results["match_ratio"])
+        stat, pvalue = mannwhitneyu(*ratios)
+        print(dataset, combo, pvalue)
+
+        # draw_significance(
+        #     ax,
+        #     pvalue,
+        #     x=i * 2 + 0.5,
+        #     xdist=0.5,
+        #     y=combo_results["match_ratio"].max() + 0.03,
+        #     # ydist=0.05,
+        # )
+
+# for i, (group_label, group_results) in enumerate(results.groupby(["dataset", "layer"])):
+#     ratios = []
+#     for method, method_results in group_results.groupby("method"):
+#         ratios.append(method_results["match_ratio"])
+#     stat, pvalue = mannwhitneyu(*ratios)
+#     print(group_label, pvalue)
+#     print()
+#     if group_label[0] == "male":
+#         ax = axs[1]
+#     else:
+#         ax = axs[0]
+# draw_significance(ax, pvalue, x=i, xdist=0.5, y=1.02)
+
 
 gluefig("accuracy_upsetplot", fig)
-
-# %%
-
-from scipy.stats import mannwhitneyu
-
-for group_label, group_results in results.groupby(["dataset", "layer"], sort=False):
-    ratios = []
-    for method, method_results in group_results.groupby("method"):
-        ratios.append(method_results["match_ratio"])
-    stat, pvalue = mannwhitneyu(*ratios)
-    print(group_label, pvalue)
-    print()
