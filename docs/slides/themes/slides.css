@@ -47,6 +47,11 @@ img[alt~="person"] {
     text-align: center;
 }
 
+img[alt~="cropright"] {
+    object-fit: cover !important;
+    object-position: left;
+}
+
 
 .columns {
     display: grid;
@@ -110,6 +115,12 @@ header {
 .columns2-bl {
     display: grid;
     grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+}
+
+.columns2-br {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
     gap: 1rem;
 }
 
