@@ -295,3 +295,35 @@ for i, (dataset, data_results) in enumerate(results.groupby("dataset", sort=Fals
 
 
 gluefig("accuracy_upsetplot", fig)
+
+#%%
+
+
+fig, ax = plt.subplots(
+    1,
+    1,
+    figsize=(6, 7),
+)
+
+data_results = results.query("dataset == 'herm'")
+
+uc = upset_catplot(
+    data=data_results,
+    x=["chem", "elec", "ipsi", "contra"],
+    y="match_ratio",
+    kind="strip",
+    ax=ax,
+    hue="method",
+    palette=method_palette,
+    jitter=0.2,
+    estimator_labels=True,
+    estimator=np.mean,
+)
+uc.set_upset_ticklabels(category_name_map)
+
+sns.move_legend(ax, loc="upper left", title="Method", frameon=True)
+
+ax.set(ylabel="Matching accuracy")
+ax.yaxis.set_major_locator(plt.MaxNLocator(4))
+
+gluefig("accuracy_upsetplot_herm", fig)
