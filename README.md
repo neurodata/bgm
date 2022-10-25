@@ -7,6 +7,12 @@ Benjamin D. Pedigo, Michael Winding, Carey E. Priebe, Joshua T. Vogelstein
 Graph matching algorithms attempt to find the best correspondence between the nodes of two networks. These techniques have previously been used to match individual neurons in nanoscale connectomes; in particular, to find pairings of neurons across hemispheres. However, since graph matching techniques deal specifically with two networks, they have only utilized the ipsilateral (same hemisphere) subgraphs when performing the matching. Here, we present a modification to a state-of-the-art graph matching algorithm which allows it to solve what we call the bisected graph matching problem. This modification allows us to use connections between the brain hemispheres when predicting neuron pairs. We show in simulation as well as real connectome examples that when edge correlation is present between the contralateral (between hemisphere) subgraphs, this approach improves matching accuracy. We expect that our proposed method will improve future endeavors to accurately match neurons between hemispheres in connectomes, and be useful in other applications where the bisected graph matching problem arises.
 
 ![](./results/figs/explain/explain.svg)
+
+## Code for the method
+The bisected graph matching method (and vanilla graph matching) are implemented in a 
+user-friendly and documented function as part of `graspologic`, available at 
+[github.com/microsoft/graspologic](https://github.com/microsoft/graspologic). If you 
+are looking to use this method in your own work, we recommend accessing it from there. 
  
 ## Repo structure 
 - ``.github``: Files specifying how the repo behaves on GitHub.
@@ -67,8 +73,8 @@ reproducible environment for running the code for this project.
   ```
   - If you need to deactivate this environment, just type `deactivate`
 
-#### Using `pip`
-*Coming soon*
+<!-- #### Using `pip`
+*Coming soon* -->
 
 ### Data 
 The raw data is copied from the papers cited (see Table 1 in the paper) and included
