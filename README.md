@@ -1,6 +1,7 @@
 # Bisected graph matching improves automated pairing of bilaterally homologous neurons from connectomes
 Benjamin D. Pedigo, Michael Winding, Carey E. Priebe, Joshua T. Vogelstein
 
+[![Paper Badge](https://img.shields.io/badge/Paper-Network%20Neuroscience-orange)](https://direct.mit.edu/netn/article/doi/10.1162/netn_a_00287/113527/Bisected-graph-matching-improves-automated-pairing)
 [![bioRxiv Badge](https://img.shields.io/badge/bioRxiv-2022.05.19.492713-green)](https://www.biorxiv.org/content/10.1101/2022.05.19.492713) [![Jupyter Book Badge](https://jupyterbook.org/badge.svg)](http://docs.neurodata.io/bgm/) [![DOI](https://zenodo.org/badge/475470258.svg)](https://zenodo.org/badge/latestdoi/475470258)
 
 ## Abstract 
