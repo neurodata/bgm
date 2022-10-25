@@ -156,7 +156,7 @@ data/*
 !data/maggot
 data/maggot/pairs-2021-04-06.csv
 
-results
+# results
 # results/outputs/*
 # !results/outputs/connectomes
 # results/figs/size_simulations
