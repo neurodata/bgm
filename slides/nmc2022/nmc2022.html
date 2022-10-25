@@ -483,7 +483,8 @@ title="Print to PDF"
                 
               <div>
                 
-  <!-- footer: __Paper:__ tinyurl.com/neuromatch-bgm -->
+  <!-- Hello, my name is Ben Pedigo, and I’m excited to tell you about my work on bisected graph matching and how it can be useful in connectomics.  -->
+<!-- footer: __Paper:__ tinyurl.com/neuromatch-bgm -->
 <!-- _paginate: false -->
 <style scoped>
 h1, h2 {
@@ -502,9 +503,15 @@ h1 {
 <br>
 <section id="benjamin-d-pedigo-johns-hopkins-university">
 <h2>Benjamin D. Pedigo - Johns Hopkins University<a class="headerlink" href="#benjamin-d-pedigo-johns-hopkins-university" title="Permalink to this headline">#</a></h2>
-</section>
-</section>
 <hr class="docutils" />
+<!-- So, why are we talking about graph matching in the first place, and what is it?
+
+The motivation for this work is what you see on the left, which shows a bilaterally homologous neuron pair in the Drosophila larva. In Drosophila, C. elegans, and many other small organisms which are studied in connectomics, neurons often have a bilaterally homologous pair on the other side of the nervous system. These neurons are thought to be similar in terms of morphology, gene expression, and most importantly for this work, connectivity. 
+
+Mapping the connectome of one of these organisms gives us a network of neurons, represented here as an adjacency matrix. I've sorted this adjacency matrix for an imaginary connectome by what side of the brain each neuron is in. Given one of these networks, several recent works showed that we can use graph matching to predict these neuron pairings from the basis of connectivity. Graph matching tries to make the adjacency matrix of the left-to-left hemisphere connections as similar as possible to that of the right-to-right hemisphere connections. It does so by optimizing over the set of matchings of these two subnetworks, here represented by P, which is a permutation of the nodes of one hemisphere with respect to the other.
+ -->
+</section>
+</section>
 <section class="tex2jax_ignore mathjax_ignore" id="graph-matching-gm-for-connectomics">
 <h1>Graph matching (GM) for connectomics<a class="headerlink" href="#graph-matching-gm-for-connectomics" title="Permalink to this headline">#</a></h1>
 <div class="columns2-br">
@@ -516,40 +523,35 @@ h1 {
 <p><img alt="center cropright w:630 h:400" src="../../_images/explain.svg" /></p>
 </div>
 </div>
-</section>
 <hr class="docutils" />
+<!-- Now, notice that this approach of using graph matching ignores the connectivity which goes between the hemispheres, for instance this subgraph of connections from the left hemisphere to the right hemisphere. 
+
+In this work, we asked a very simple question - would including these connections in our optimization improve matching performance? To get at this question, we created what we call the bisected graph matching problem. We added a term to the graph matching objective function which tries to make the contralateral subgraphs look as similar as possible under some matching. Further, we adapted a state-of-the-art graph matching algorithm called FAQ to solve this modified problem. 
+-->
+</section>
 <section class="tex2jax_ignore mathjax_ignore" id="bisected-graph-matching-bgm">
 <h1>Bisected graph matching (BGM)<a class="headerlink" href="#bisected-graph-matching-bgm" title="Permalink to this headline">#</a></h1>
 <p><img alt="" src="../../_images/explain.svg" /></p>
 <p><strong>We adapt the FAQ algorithm (Vogelstein et al. 2015) to solve BGM</strong></p>
-</section>
 <hr class="docutils" />
+<!-- To test our approach, we evaluated graph matching and bisected graph matching on 5 published connectome datasets for which these bilateral pairings were already known. We found that on all 5 of the connectome datasets we examined, this bisected graph matching procedure significantly improved matching accuracy, and buy a surprisingly large amount.  -->
+</section>
 <section class="tex2jax_ignore mathjax_ignore" id="bgm-increases-matching-accuracy">
 <h1>BGM increases matching accuracy<a class="headerlink" href="#bgm-increases-matching-accuracy" title="Permalink to this headline">#</a></h1>
 <p><img alt="center h:550" src="../../_images/match_accuracy_comparison.svg" /></p>
 <hr class="docutils" />
-<!-- <style scoped>
-h1 {padding-bottom: 0px}
-h2 {padding-top: 0px}
-</style> -->
+<!-- BGM can also be combined with other extensions of graph matching. Here, we combine our approach with multiplex graph matching. Multiplex graph matching allows us to incorporate multiple types of connections in the optimization - here, both chemical and electrical synapses in the C. elegans. We found that using bisected and multiplex graph matching improved matching accuracy more than using either technique alone on two c. elegans connectomes. Our paper describes how to combine BGM with several other graph matching extensions which can further improve performance.  -->
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="extensions-to-bgm-multiplex-networks">
 <h1>Extensions to BGM: multiplex networks<a class="headerlink" href="#extensions-to-bgm-multiplex-networks" title="Permalink to this headline">#</a></h1>
 <p><img alt="center h:500" src="../results/figs/connectome_multilayer/accuracy_upsetplot.svg" /></p>
-<!-- <div class="columns">
-<div>
-
-
-</div>
-<div> -->
-<!-- ## Seeded matching (*Dros.* larva)
-
-![h:375](../../../overleaf/figs/connectome_seeded/accuracy_by_seeds.svg)
-
-</div>
-</div> -->
 <hr class="docutils" />
-<!-- ![center h:400](./../../../results/figs/connectome_seeded/example_matched_morphologies_good.svg) -->
+<!-- To summarize, graph matching is a useful way of pairing neurons between connectome datasets; in particular, between the two sides of a nervous system. 
+
+When doing this matching between hemispheres, we present a method for including the entire connectome in the optimization, which we find greatly improves performance in practice. 
+
+There’s a link to the manuscript on bioarxiv, as well all code for this manuscript. We also include an implementation of graph matching and bisected graph matching in our open source python package, graspologic. Please feel free to get in touch if you have any questions.
+ -->
 <p><img alt="bg center blur:3px opacity:15%" src="../../_images/background.svg" /></p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="summary">
